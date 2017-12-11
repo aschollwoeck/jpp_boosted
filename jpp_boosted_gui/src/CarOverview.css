@@ -1,0 +1,21 @@
+.jpp-search-result {
+    border: 1px solid #2e2c2c17;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: #2e2c2c17;
+}
+
+.jpp-search-result-header {
+    padding-top: 15px;
+}
+
+.carOverviewImg {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100px;
+}
+
+.jpp-search-result-stage {
+    margin-top: 10px;
+}

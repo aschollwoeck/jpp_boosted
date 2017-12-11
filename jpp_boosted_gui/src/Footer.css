@@ -1,0 +1,13 @@
+.jpp-footer {
+    background-color: #2e2c2c17;
+    text-align: center;
+    padding-top: 7px;
+    padding-bottom: 15px;
+    position: relative;
+    margin-top: -100px;
+    min-height: 100px;
+    clear: both;
+    /* position: absolute;
+    bottom: 0;
+    width: 100%; */
+}
