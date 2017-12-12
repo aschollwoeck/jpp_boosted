@@ -4,6 +4,7 @@ import Header from './Header';
 import Footer from './Footer';
 import Search from './Search';
 import CarOverview from './CarOverview';
+import Home from './Home';
 
 class App extends Component {
   performSearch(t) {
@@ -37,9 +38,7 @@ class App extends Component {
       <div className="App">
         <Header />
         <div className="jpp-content">
-          <div className="container">
-            <Search onSubmit={this.performSearch} />
-          </div>
+          <Home onSubmit={this.performSearch} />
         </div>
         <Footer />
       </div>

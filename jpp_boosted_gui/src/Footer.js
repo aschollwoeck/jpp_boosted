@@ -8,7 +8,7 @@ class Footer extends React.Component {
             <div className="jpp-footer">
                 <div className="container">
                     <div className="row">
-                        <div className="col-3">
+                        <div className="col-sm-4">
                             <strong>
                                 <div>
                                     <a href="/">About</a>
@@ -18,10 +18,18 @@ class Footer extends React.Component {
                                 </div>
                             </strong>
                         </div>
-                        <div className="col-6">
-                            &copy; {currentDate} jpp-boosted.de
-                    </div>
-                        <div className="col-3">
+                        <div className="col-sm-4">
+                            <div>
+                                Wünsche, Anregungen, Ideen?
+                            </div>
+                            <div>
+                                Schreib eine <a href="mailto:contact@jpp-boosted.de">Mail</a>!
+                            </div>
+                            <div>
+                                &copy; {currentDate} jpp-boosted.de
+                            </div>
+                        </div>
+                        <div className="col-sm-4">
                             <strong>
                                 <div>
                                     <a href="/">Terms</a>

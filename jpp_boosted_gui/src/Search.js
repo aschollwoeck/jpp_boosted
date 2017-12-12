@@ -24,7 +24,6 @@ class Search extends React.Component {
     render() {
         return (
             <div>
-                <h3>Gemessene Zeiten von modifizierten Autos der <a target="blank" href="https://www.jp-performance.de">JP Performance GmbH</a></h3>
                 <form onSubmit={this.submit} id="search" className="Search">
                     <input type="search" placeholder="Search for a car..." value={this.state.searchTerm} onChange={this.handleSearchTermChange} />
                 </form>
