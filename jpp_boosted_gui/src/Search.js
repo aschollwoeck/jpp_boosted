@@ -24,8 +24,15 @@ class Search extends React.Component {
     render() {
         return (
             <div>
-                <form onSubmit={this.submit} id="search" className="Search">
-                    <input type="search" placeholder="Search for a car..." value={this.state.searchTerm} onChange={this.handleSearchTermChange} />
+                <form onSubmit={this.submit} id="search">
+                    <div className="Search">
+                        <input type="search" placeholder="Search for a car..." value={this.state.searchTerm} onChange={this.handleSearchTermChange} />
+                        <span className="input-group-btn">
+                            <button className="btn">
+                                <i className="fas fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
                 </form>
             </div>
         );

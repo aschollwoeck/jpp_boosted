@@ -38,14 +38,19 @@ class CarOverview extends React.Component {
         const stages = this.props.car.tuning.map(t => {
             const times = t.measuredTime.map(m => {
                 return (
-                    <div className="col-9 offset-3" key={m.id}>{m.speedRange}: {m.time} Sekunden</div>
+                    <div key={m.id}>{m.speedRange}: {m.time} Sekunden</div>
                 );
             });
             return (
                 <div key={t.id} className="jpp-search-result-stage row">
                     <div className="col-3"><strong>{t.stage}</strong></div>
-                    <div className="col-9">{t.description}</div>
-                    {times}
+                    <div className="col-9">
+                        <div>{t.description}</div>
+                        {times}
+                        <div>
+                            <iframe width="300" src="https://www.youtube.com/embed/Oe7qUG7ccRI" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
+                        </div>
+                    </div>
                 </div>
             );
         });
@@ -60,9 +65,9 @@ class CarOverview extends React.Component {
                     <div className="jpp-search-result-manufacturer media">
                         <img className="mr-3 carOverviewImg" src={c63amg} alt="car" />
                         <div className="media-body">
-                            <div>Model: {this.props.car.model}</div>
-                            <div>Hersteller: {this.props.car.manufacturer}</div>
-                            <div>Baujahr: {this.props.car.buildYear}</div>
+                            <div>Model: {this.props.car.baseModel.model}</div>
+                            <div>Hersteller: {this.props.car.baseModel.manufacturer}</div>
+                            <div>Baujahr: {this.props.car.baseModel.manufactureDate}</div>
                         </div>
                     </div>
                     <div className="jpp-search-result-stages">

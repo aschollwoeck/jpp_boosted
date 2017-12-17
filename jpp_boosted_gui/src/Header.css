@@ -1,8 +1,9 @@
 .header {
     /* display: flex; */
     height: 55px;
-    background-color: #1a1919;
+    /* background-color: #1a1919; */
     padding: 5px 10px;
+    border-bottom: 1px solid #eaeaea;
 }
 
 .header-name {
@@ -21,7 +22,15 @@
   max-width: 200px;
 }
 
+.boost-logo {
+    height: 35px;
+    width: auto;
+}
+
 .header-home-link {
     color: white;
+    background-color: black;
+    padding: 10px 10px;
     font-size: 18px;
+    font-weight: 800;
 }

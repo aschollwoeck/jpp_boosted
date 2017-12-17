@@ -4,6 +4,7 @@ body, html {
 
 .App {
   height: 100%;
+  font-family: 'hind_m','simhei',verdana,Helvetica,sans-serif;
 }
 
 @keyframes App-logo-spin {
