@@ -1,8 +1,8 @@
 .jpp-search-result {
-    border: 1px solid #2e2c2c17;
+    border: 1px solid #413e3e17;
     margin-top: 10px;
     margin-bottom: 10px;
-    background-color: #2e2c2c17;
+    background-color: #42414117;
 }
 
 .jpp-search-result-header {
@@ -18,4 +18,8 @@
 
 .jpp-search-result-stage {
     margin-top: 10px;
+}
+
+.jpp-search-result-stage {
+    border-top: 1px solid #42414117;
 }

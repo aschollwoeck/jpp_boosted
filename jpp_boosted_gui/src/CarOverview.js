@@ -43,13 +43,15 @@ class CarOverview extends React.Component {
             });
             return (
                 <div key={t.id} className="jpp-search-result-stage row">
-                    <div className="col-3"><strong>{t.stage}</strong></div>
-                    <div className="col-9">
+                    <div className="col-3">
+                        <strong>{t.stage}</strong>
+                    </div>
+                    <div className="col-5">
                         <div>{t.description}</div>
-                        {times}
-                        <div>
-                            <iframe width="300" src="https://www.youtube.com/embed/Oe7qUG7ccRI" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
-                        </div>
+                        {times}  
+                    </div>
+                    <div className="col-4">
+                        <iframe width="100%" src="https://www.youtube.com/embed/Oe7qUG7ccRI" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
                     </div>
                 </div>
             );

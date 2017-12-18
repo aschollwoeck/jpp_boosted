@@ -89,6 +89,31 @@ function getVideos() {
       tuning: [
         {
           id: 1,
+          stage: "Serie",
+          description: "Herstellerangaben",
+          horsePower: 563,
+          powerWheels: 258,
+          torque: 634,
+          modificationDate: 2016,
+          modifiedParts: [
+          ],
+          measuredTime: [
+            {
+              id: 1,
+              speedRange: "0-200",
+              time: "10.3",
+              youtubeUrl: ""
+            },
+            {
+              id: 2,
+              speedRange: "0-100",
+              time: "4.2",
+              youtubeUrl: ""
+            }
+          ]
+        },
+        {
+          id: 1,
           stage: "Stage 2",
           description: "Software, Krümmer",
           horsePower: 563,
