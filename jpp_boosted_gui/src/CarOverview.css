@@ -23,3 +23,8 @@
 .jpp-search-result-stage {
     border-top: 1px solid #42414117;
 }
+@media screen and (min-width: 700px) {
+    .jpp-search-result-stage {
+        display: flex;
+    }
+}

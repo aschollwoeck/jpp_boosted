@@ -8,49 +8,103 @@ class CarOverview extends React.Component {
     // {
     //     id: 1,
     //     title: "C63 AMG Tuning",
-    //     buildYear: 2016,
-    //     manufacturer: "Mercedes-Benz",
-    //     model: "C63 AMG",
+    //     modificationStart: 2016,
+    //     modificationEnd: 2016,
+    //     rating: 4.5,
+    //     baseModel: {
+    //       id: 1,
+    //       manufacturer: "Mercedes-Benz",
+    //       manufacturerUrl: "",
+    //       model: "C63 AMG",
+    //       manufactureDate: 2016,
+    //       bodyType: "Hatchback",
+    //       aspiration: "Turbo",
+    //       transmission: "Manual",
+    //       doors: 3,
+    //       seats: 4,
+    //       weigth: 1700,
+    //       height: 200,
+    //       width: 200,
+    //       length: 473,
+    //       drive: "rear-wheel",
+    //       engine: {
+    //         id: 1,
+    //         vMax: 270,
+    //         capacity: 3400,
+    //         fuel: "petrol",
+    //         cylinder: 8,
+    //         buildTimeStart: 1999,
+    //         buildTimeEnd: 2000,
+    //       },
+    //       tankCapacity: 63,
+    //       wheelbase: 2735,
+    //       maxWeight: 1785,
+    //       emptyWeight: 0,
+    //     },
     //     tuning: [
     //       {
     //         id: 1,
-    //         stage: "1",
-    //         description: "Software",
+    //         stage: "Serie",
+    //         description: "Herstellerangaben",
+    //         horsePower: 563,
+    //         powerWheels: 258,
+    //         torque: 634,
+    //         modificationDate: 2016,
+    //         modifiedParts: [
+        // {
+        //     id: 1,
+        //     part: "Krümmer",
+        //     youtubeUrl: "",
+        //     manufacturer: "Hersteller",
+        //     manufacturerUrl: "",
+        //     partUrl: ""
+        //   }
+    //         ],
     //         measuredTime: [
     //           {
     //             id: 1,
     //             speedRange: "0-200",
-    //             time: "8.7",
+    //             time: "10.3",
     //             youtubeUrl: ""
     //           },
     //           {
     //             id: 2,
     //             speedRange: "0-100",
-    //             time: "3.4",
+    //             time: "4.2",
     //             youtubeUrl: ""
     //           }
     //         ]
-    //       }
-    //     ]
-    //   }
+    //       },
 
     render() {
         const stages = this.props.car.tuning.map(t => {
+            const power =   <div>
+                                <span>PS: {t.horsePower}</span>
+                                <span>NM: {t.torque}</span>
+                                <span>Date: {t.modificationDate}</span>
+                            </div>
             const times = t.measuredTime.map(m => {
                 return (
                     <div key={m.id}>{m.speedRange}: {m.time} Sekunden</div>
                 );
             });
+            const modParts = t.modifiedParts.map(p => {
+                return (
+                    <div key={p.id}>{p.part} (<a href={p.manufacturerUrl}>{p.manufacturer}</a>)</div>
+                );
+            });
             return (
-                <div key={t.id} className="jpp-search-result-stage row">
-                    <div className="col-3">
+                <div key={t.id} className="jpp-search-result-stage">
+                    <div className="">
                         <strong>{t.stage}</strong>
                     </div>
-                    <div className="col-5">
+                    <div className="">
                         <div>{t.description}</div>
-                        {times}  
+                        {power}
+                        {times}
+                        {modParts}
                     </div>
-                    <div className="col-4">
+                    <div className="">
                         <iframe width="100%" src="https://www.youtube.com/embed/Oe7qUG7ccRI" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
                     </div>
                 </div>
