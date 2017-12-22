@@ -1,30 +1,53 @@
 .jpp-search-result {
-    border: 1px solid #413e3e17;
+    border: 1px solid #42404033;
     margin-top: 10px;
     margin-bottom: 10px;
-    background-color: #42414117;
+    background-color: #7e7a7a17;
 }
 
 .jpp-search-result-header {
-    padding-top: 15px;
+    padding-top: 10px;
 }
 
-.carOverviewImg {
+.jpp-image {
     width: auto;
     height: auto;
     max-width: 100%;
     max-height: 100px;
 }
 
-.jpp-search-result-stage {
-    margin-top: 10px;
+@media screen and (min-width: 370px) {
+    .jpp-search-result-overview {
+        display: flex;
+    }
+
+    .jpp-search-result-overview-content {
+        padding-left: 5px;
+    }
+}
+
+.jpp-search-result-overview-image {
+    min-width: 150px;
+}
+
+.jpp-search-result-overview-content {
+    min-width: 200px;
 }
 
 .jpp-search-result-stage {
-    border-top: 1px solid #42414117;
+    margin-top: 10px;
+    border-top: 1px solid #42404033;
 }
 @media screen and (min-width: 700px) {
     .jpp-search-result-stage {
         display: flex;
     }
+}
+
+.jpp-search-result-stage-name {
+    min-width: 125px;
+}
+
+.jpp-search-result-stage-content {
+    min-width: 250px;
 }
