@@ -5,6 +5,9 @@ import Footer from './Footer';
 import Search from './Search';
 import CarOverview from './CarOverview';
 import Home from './Home';
+import Privacy from './Privacy';
+import Submit from './Submit';
+import About from './About';
 
 class App extends Component {
   performSearch(t) {
@@ -27,6 +30,48 @@ class App extends Component {
             <div className="container">
               <Search onSubmit={this.performSearch} searchTerm={match[1]} />
               {cars}
+            </div>
+          </div>
+          <Footer />
+        </div>
+      );
+    }
+
+    if(window.location.href.indexOf("datenschutz") > 0) {
+      return (
+        <div className="App">
+          <Header />
+          <div className="jpp-content">
+            <div className="container">
+              <Privacy />
+            </div>
+          </div>
+          <Footer />
+        </div>
+      );
+    }
+
+    if(window.location.href.indexOf("submit") > 0) {
+      return (
+        <div className="App">
+          <Header />
+          <div className="jpp-content">
+            <div className="container">
+              <Submit />
+            </div>
+          </div>
+          <Footer />
+        </div>
+      );
+    }
+
+    if(window.location.href.indexOf("about") > 0) {
+      return (
+        <div className="App">
+          <Header />
+          <div className="jpp-content">
+            <div className="container">
+              <About />
             </div>
           </div>
           <Footer />

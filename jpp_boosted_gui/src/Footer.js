@@ -9,19 +9,15 @@ class Footer extends React.Component {
                 <div className="mt-1">
                     <ul className="footerLinks">
                         <li>
-                            <a href="/">About</a>
+                            <a href="/about">Über JPP-Boosted</a>
                         </li>
                         <li className="bar">|</li>
                         <li>
-                            <a href="/">Submit</a>
+                            <a href="/submit">Beitragen</a>
                         </li>
                         <li className="bar">|</li>
                         <li>
-                            <a href="/">Terms</a>
-                        </li>
-                        <li className="bar">|</li>
-                        <li>
-                            <a href="/">Privacy</a>
+                            <a href="/datenschutz">Datenschutz</a>
                         </li>
                     </ul>
                 </div>

@@ -9,10 +9,9 @@
 }
 
 .Search > input {
-    margin: 5px 5px;
+    margin: 5px 5px 5px 15px;
     width: 95%;
     border: 0;
-    padding-left: 10px;
 }
 
 .Search > span {

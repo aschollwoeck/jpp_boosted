@@ -78,10 +78,10 @@ class CarOverview extends React.Component {
 
     render() {
         const stages = this.props.car.tuning.map(t => {
-            const power =   <div className="row">
-                                <div className="col-4">PS: {t.horsePower}</div>
-                                <div className="col-4">NM: {t.torque}</div>
-                                <div className="col-4">Date: {t.modificationDate}</div>
+            const power =   <div className="mt-1 row">
+                                <div className="ml-3">PS: {t.horsePower}</div>
+                                <div className="ml-2">NM: {t.torque}</div>
+                                <div className="ml-2">Date: {t.modificationDate}</div>
                             </div>
             const times = t.measuredTime.map(m => {
                 return (
@@ -100,9 +100,15 @@ class CarOverview extends React.Component {
                     </div>
                     <div className="jpp-search-result-stage-content mt-1">
                         <div>{t.description}</div>
-                        {power}
-                        {times}
-                        {modParts}
+                        <div className="mt-1">
+                            {power}
+                        </div>
+                        <div className="mt-1">
+                            {times}
+                        </div>
+                        <div className="mt-1">
+                            {modParts}
+                        </div>
                     </div>
                     <div className=" mt-1">
                         <iframe width="100%" src="https://www.youtube.com/embed/Oe7qUG7ccRI" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
