@@ -1,4 +1,7 @@
 import React from 'react';
+
+import SubmitStage from './SubmitStage';
+
 import './Submit.css';
 
 class Submit extends React.Component {
@@ -8,7 +11,7 @@ class Submit extends React.Component {
             title: "",
             manufacturer: "",
             model: "",
-            tuning: [{ps: "", nm: ""}],
+            tuning: [this.getNewTuning()],
         }
     }
 
@@ -83,6 +86,10 @@ class Submit extends React.Component {
     //         ]
     //       },
 
+    getNewTuning() {
+        return {name: "", description: "", ps: "", nm: "", date: "", measuredTime: [], modifiedParts: []};
+    }
+
     handleUserInput = (e) => {
         console.log(e.target.name + " " + e.target.value);
         const name = e.target.name;
@@ -90,73 +97,59 @@ class Submit extends React.Component {
         this.setState({[name]: value});
     }
 
+    addStage = (e) => {
+        e.preventDefault();
+        console.log("Neuer Umbau");
+        const tuning = this.state.tuning;
+        tuning.push(this.getNewTuning());
+
+        this.setState({tuning: tuning});
+    }
+
+    tuningChanged = (index, value) => {
+        console.log(value);
+
+        const tunings = this.state.tuning.slice();
+        tunings[index] = value;
+        this.setState({tuning: tunings});
+    }
+
     render() {
+        const stages = this.state.tuning.map((t, i) => {
+            return (
+                <SubmitStage key={"tuning"+i} index={i} tuning={t} onChange={this.tuningChanged} />
+            );
+        });
+
         return (
             <form>
                 <h2>Neues Fahrzeug</h2>
                 <div className="form-group">
-                    <label htmlFor="title">Titel</label>
+                    <label className="keyName" htmlFor="title">Titel</label>
                     <input type="text" name="title" placeholder="BMW V8"
                         value={this.state.title}
                         onChange={this.handleUserInput} />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="manufacturer">Hersteller</label>
-                    <input type="text" name="manufacturer" placeholder="BMW"
-                        value={this.state.manufacturer}
-                        onChange={this.handleUserInput} />
-                    <label htmlFor="model">Model</label>
-                    <input type="text" name="model" placeholder="z.B M3"
-                        value={this.state.model}
-                        onChange={this.handleUserInput} />
+                    <div>
+                        <label className="keyName" htmlFor="manufacturer">Hersteller</label>
+                        <input type="text" name="manufacturer" placeholder="BMW"
+                            value={this.state.manufacturer}
+                            onChange={this.handleUserInput} />
+                    </div>
+                    <div>
+                        <label className="keyName" htmlFor="model">Model</label>
+                        <input type="text" name="model" placeholder="z.B M3"
+                            value={this.state.model}
+                            onChange={this.handleUserInput} />
+                    </div>
                 </div>
                 <h4>Umbauten</h4>
-                <div className="form-group">
-                    <label htmlFor="stage-name">Name</label>
-                    <input type="text" name="stage-name" placeholder="Serie, Stage 1..." />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="stage-description">Beschreibung</label>
-                    <textarea name="stage-description" placeholder="Software, Abgasanlage" />
-                </div>
-                <h5>Messungen</h5>
-                <div className="form-group">
-                    <label htmlFor="stage-ps">PS</label>
-                    <input type="text" name="stage-ps" placeholder="414"
-                        value={this.state.tuning[0].ps}
-                        onChange={this.handleUserInput} />
-                    <label htmlFor="tuning[0].nm">NM</label>
-                    <input type="text" name="tuning[0].nm" placeholder="510"
-                        value={this.state.tuning[0].nm}
-                        onChange={this.handleUserInput} />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="stage-date">Datum</label>
-                    <input type="date" name="stage-date" />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="stage-speedRange">KM/H</label>
-                    <input type="text" name="stage-speedRange" placeholder="0-100" />
-                    <label htmlFor="stage-speedTime">Zeit (Sek.)</label>
-                    <input type="text" name="stage-speedTime" placeholder="3.8" />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="stage-speedYoutube">YouTube</label>
-                    <input type="text" name="stage-speedYoutube" placeholder="youtube.com/watch?v=v1kFDOnueug" />
-                </div>
-                <h5>Teile</h5>
-                <div className="form-group">
-                    <label htmlFor="stage-part-name">Teilename</label>
-                    <input type="text" name="stage-part-name" placeholder="Krümmer" />
-                    <label htmlFor="stage-part-url">URL</label>
-                    <input type="text" name="stage-part-url" placeholder="" />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="stage-part-manufacturer">Teilehersteller</label>
-                    <input type="text" name="stage-part-manufacturer" placeholder="" />
-                    <label htmlFor="stage-part-manufacturer-url">URL</label>
-                    <input type="text" name="stage-part-manufacturer-url" placeholder="" />
-                </div>
+                <button className="btn btn-primary" onClick={this.addStage}>
+                    + Umbau hinzufügen
+                </button>
+                <hr />
+                {stages}
                 <button type="submit" className="btn btn-primary">
                     Absenden
                 </button>
@@ -164,10 +157,4 @@ class Submit extends React.Component {
         );
     }
 }
-        //     id: 1,
-        //     part: "Krümmer",
-        //     youtubeUrl: "",
-        //     manufacturer: "Hersteller",
-        //     manufacturerUrl: "",
-        //     partUrl: ""
 export default Submit;
