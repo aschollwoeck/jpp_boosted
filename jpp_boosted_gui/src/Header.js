@@ -1,6 +1,5 @@
 import React from 'react'
 import logo from './jpp_small.png';
-import boost from './boost_out_black.svg';
 import './Header.css';
 
 class Header extends React.Component {

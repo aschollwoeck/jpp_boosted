@@ -1,8 +1,37 @@
 import React from 'react';
+import Autosuggest from 'react-autosuggest';
 
 import SubmitStage from './SubmitStage';
 
 import './Submit.css';
+
+async function getManuSuggestions(value) {
+    if (value === undefined || value.value === undefined)
+        return [];
+
+    var prom = await fetch("/carmanufacturers?name=" + value.value)
+        .then(r => r.json())
+        .then(json => json)
+        .catch(e => console.log(e));
+
+    if (prom === null)
+        return [];
+    return prom;
+};
+
+async function getManuModelsSuggestions(manu, value) {
+    if (manu === undefined || value === undefined || value.value === undefined)
+        return [];
+
+    var prom = await fetch(`/carmanufacturers/${manu.id}/models?name=${value.value}`)
+        .then(r => r.json())
+        .then(json => json)
+        .catch(e => console.log(e));
+
+    if (prom === null)
+        return [];
+    return prom;
+};
 
 class Submit extends React.Component {
     constructor(props) {
@@ -12,114 +41,140 @@ class Submit extends React.Component {
             manufacturer: "",
             model: "",
             tuning: [this.getNewTuning()],
+            selectedManufacturer: undefined,
+            possibleManufacturers: [],
+            manuValue: "",
+            selectedModel: undefined,
+            possibleModels: [],
+            modelValue: ""
         }
     }
 
-    // {
-    //     id: 1,
-    //     title: "C63 AMG Tuning",
-    //     modificationStart: 2016,
-    //     modificationEnd: 2016,
-    //     rating: 4.5,
-    //     baseModel: {
-    //       id: 1,
-    //       manufacturer: "Mercedes-Benz",
-    //       manufacturerUrl: "",
-    //       model: "C63 AMG",
-    //       manufactureDate: 2016,
-    //       bodyType: "Hatchback",
-    //       aspiration: "Turbo",
-    //       transmission: "Manual",
-    //       doors: 3,
-    //       seats: 4,
-    //       weigth: 1700,
-    //       height: 200,
-    //       width: 200,
-    //       length: 473,
-    //       drive: "rear-wheel",
-    //       engine: {
-    //         id: 1,
-    //         vMax: 270,
-    //         capacity: 3400,
-    //         fuel: "petrol",
-    //         cylinder: 8,
-    //         buildTimeStart: 1999,
-    //         buildTimeEnd: 2000,
-    //       },
-    //       tankCapacity: 63,
-    //       wheelbase: 2735,
-    //       maxWeight: 1785,
-    //       emptyWeight: 0,
-    //     },
-    //     tuning: [
-    //       {
-    //         id: 1,
-    //         stage: "Serie",
-    //         description: "Herstellerangaben",
-    //         horsePower: 563,
-    //         powerWheels: 258,
-    //         torque: 634,
-    //         modificationDate: 2016,
-    //         modifiedParts: [
-        // {
-        //     id: 1,
-        //     part: "Krümmer",
-        //     youtubeUrl: "",
-        //     manufacturer: "Hersteller",
-        //     manufacturerUrl: "",
-        //     partUrl: ""
-        //   }
-    //         ],
-    //         measuredTime: [
-    //           {
-    //             id: 1,
-    //             speedRange: "0-200",
-    //             time: "10.3",
-    //             youtubeUrl: ""
-    //           },
-    //           {
-    //             id: 2,
-    //             speedRange: "0-100",
-    //             time: "4.2",
-    //             youtubeUrl: ""
-    //           }
-    //         ]
-    //       },
-
     getNewTuning() {
-        return {name: "", description: "", ps: "", nm: "", date: "", measuredTime: [], modifiedParts: []};
+        return { name: "", description: "", ps: "", nm: "", date: "", measuredTime: [], modifiedParts: [] };
     }
 
     handleUserInput = (e) => {
-        console.log(e.target.name + " " + e.target.value);
         const name = e.target.name;
         const value = e.target.value;
-        this.setState({[name]: value});
+
+        if (name === "manufacturer") {
+            fetch("/carmanufacturers?name=" + e.target.value)
+                .then(r => r.json())
+                .then(json => console.log(json))
+                .catch(e => console.log(e));
+        }
+        else if (name === "model") {
+
+        }
+
+        this.setState({ [name]: value });
     }
 
     addStage = (e) => {
         e.preventDefault();
-        console.log("Neuer Umbau");
         const tuning = this.state.tuning;
         tuning.push(this.getNewTuning());
 
-        this.setState({tuning: tuning});
+        this.setState({ tuning: tuning });
     }
 
     tuningChanged = (index, value) => {
-        console.log(value);
-
         const tunings = this.state.tuning.slice();
         tunings[index] = value;
-        this.setState({tuning: tunings});
+        this.setState({ tuning: tunings });
+    }
+
+    onModelChange = (event, value) => {
+        this.setState({ selectedModel: this.state.possibleModels.find(m => m.buildSeries === value.newValue), modelValue: value.newValue });
+        getManuModelsSuggestions(this.state.selectedManufacturer, value.newValue).then(models => this.setState({ possibleModels: models }));
+    }
+
+    onManuChange = (event, value) => {
+        this.setState({ selectedManufacturer: this.state.possibleManufacturers.find(m => m.name === value.newValue), manuValue: value.newValue, selectedModel: undefined, modelValue: "" });
+        getManuSuggestions(value.newValue).then(manus => this.setState({ possibleManufacturers: manus }));
+    }
+
+    postNewProject = (e) => {
+        e.preventDefault();
+
+        var project = {
+            carmodelid: this.state.selectedModel.id,
+            title: this.state.title,
+            tunings: this.state.tuning.map(t => {
+                var temp = {
+                    stage: t.name,
+                    description: t.description,
+                    horsePower: parseInt(t.ps, 10),
+                    torque: parseInt(t.nm, 10),
+                    date: t.date,
+                    parts: [],
+                    times: [],
+                };
+
+                if (t.modifiedParts != null) {
+                    temp.parts = t.modifiedParts.map(p => {
+                        return { name: p.part, url: p.partUrl, manufacturer: p.manufacturer, manufacturerurl: p.manufacturerUrl };
+                    });
+                }
+                if (t.measuredTime != null) {
+                    temp.times = t.measuredTime.map(mt => {
+                        return { speedRange: mt.speedRange, time: parseFloat(mt.time) };
+                    });
+                }
+
+                return temp;
+            })
+        };
+
+        // console.log(JSON.stringify(project));
+
+        fetch("/projects", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(project)
+        })
+            .then(res => res.json())
+            .then(json => console.log(json));
     }
 
     render() {
         const stages = this.state.tuning.map((t, i) => {
             return (
-                <SubmitStage key={"tuning"+i} index={i} tuning={t} onChange={this.tuningChanged} />
+                <SubmitStage key={"tuning" + i} index={i} tuning={t} onChange={this.tuningChanged} />
             );
         });
+        var umbauten = "";
+
+        if (this.state.selectedManufacturer !== undefined && this.state.selectedModel !== undefined) {
+            umbauten = (<div>
+                <h4>Umbauten</h4>
+                <button className="btn btn-primary" onClick={this.addStage}>
+                    + Umbau hinzufügen
+                </button>
+                <hr />
+                {stages}
+                <hr />
+                <button type="submit" className="btn btn-primary" onClick={this.postNewProject}>
+                    Absenden
+                </button>
+            </div>);
+        }
+
+        const inputPropsManu = {
+            placeholder: 'BMW',
+            value: this.state.manuValue,
+            onChange: this.onManuChange
+        };
+
+        const inputPropsModel = {
+            placeholder: 'M3',
+            value: this.state.modelValue,
+            onChange: this.onModelChange
+        };
 
         return (
             <form>
@@ -130,31 +185,82 @@ class Submit extends React.Component {
                         value={this.state.title}
                         onChange={this.handleUserInput} />
                 </div>
+
                 <div className="form-group">
                     <div>
                         <label className="keyName" htmlFor="manufacturer">Hersteller</label>
-                        <input type="text" name="manufacturer" placeholder="BMW"
-                            value={this.state.manufacturer}
-                            onChange={this.handleUserInput} />
+                        <Autosuggest
+                            id="manufacturer"
+                            suggestions={this.state.possibleManufacturers}
+                            onSuggestionsFetchRequested={(value) => {
+                                getManuSuggestions(value).then(manus => this.setState({ possibleManufacturers: manus }));
+                            }}
+                            onSuggestionsClearRequested={() => this.setState({ possibleManufacturers: [] })}
+                            getSuggestionValue={(item) => item.name}
+                            renderSuggestion={(item) => (
+                                <div>
+                                    {item.name}
+                                </div>)}
+                            inputProps={inputPropsManu}
+                        />
+
                     </div>
                     <div>
                         <label className="keyName" htmlFor="model">Model</label>
-                        <input type="text" name="model" placeholder="z.B M3"
-                            value={this.state.model}
-                            onChange={this.handleUserInput} />
+                        <Autosuggest
+                            id="model"
+                            suggestions={this.state.possibleModels}
+                            onSuggestionsFetchRequested={(value) => {
+                                getManuModelsSuggestions(this.state.selectedManufacturer, value).then(models => this.setState({ possibleModels: models }));
+                            }}
+                            onSuggestionsClearRequested={() => this.setState({ possibleModels: [] })}
+                            getSuggestionValue={(item) => `${item.buildSeries}`}
+                            renderSuggestion={(item) => (
+                                <div>
+                                    {item.buildSeries}
+                                </div>)}
+                            inputProps={inputPropsModel}
+                        />
                     </div>
                 </div>
-                <h4>Umbauten</h4>
-                <button className="btn btn-primary" onClick={this.addStage}>
-                    + Umbau hinzufügen
-                </button>
-                <hr />
-                {stages}
-                <button type="submit" className="btn btn-primary">
-                    Absenden
-                </button>
+                {umbauten}
             </form>
         );
     }
 }
+// <input type="text" name="manufacturer" placeholder="BMW"
+//                             value={this.state.manufacturer}
+//                             onChange={this.handleUserInput} />
+// <input type="text" name="model" placeholder="z.B M3"
+//                             value={this.state.model}
+//                             onChange={this.handleUserInput} />
 export default Submit;
+// <Autocomplete
+//     inputProps={{ id: 'states-autocomplete' }}
+//     wrapperStyle={{ position: 'relative', display: 'inline-block' }}
+//     value={this.state.manuValue}
+//     items={this.state.possibleManufacturers}
+//     getItemValue={(item) => item.name}
+//     onSelect={(value, item) => {
+//         // set the menu to only the selected item
+//         // this.setState({ selectedManufacturer: item, manuValue: value, possibleManufacturers: [item] });
+//         this.setState({ selectedManufacturer: item, manuValue: value });
+//         // or you could reset it to a default list again
+//         getManuSuggestions(value).then(manus => this.setState({ possibleManufacturers: manus }));
+//     }}
+//     onChange={(event, value) => {
+//         this.setState({ selectedManufacturer: this.state.possibleManufacturers.find(m => m.name === value), manuValue: value });
+//         getManuSuggestions(value).then(manus => this.setState({ possibleManufacturers: manus }));
+//     }}
+//     renderMenu={children => (
+//         <div className="menu">
+//             {children}
+//         </div>
+//     )}
+//     renderItem={(item, isHighlighted) => (
+//         <div
+//             className={`item ${isHighlighted ? 'item-highlighted' : ''}`}
+//             key={item.abbr}
+//         >{item.name}</div>
+//     )}
+// />
