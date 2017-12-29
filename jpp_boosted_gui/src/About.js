@@ -5,19 +5,20 @@ function About(props) {
         <div>
             <h2>Wieso JPP-Boosted?</h2>    
             <p>JPP-Boosted stellt eine Übersicht über Projekt- und Kundenfahrzeuge 
-            von JP Performance dar. Es werden Informationen zu den Umbauten 
+            von JP Performance zur Verfügung. Es werden Informationen zu den Umbauten 
             pro Fahrzeug angegeben und damit auch gemessene Zeiten, 
-            als auch verbaute Teile.</p>
+            als auch verbaute Teile. Alle Infos werden aktuell von JPs Videos zusammengetragen. 
+            Falsche und unvollständige Infos sind somit nicht ausgeschlossen...</p>
             <p>&nbsp;</p>
             <h2>Für wen ist JPP-Boosted?</h2>
             <p>Für alle Schokohasen, die Interesse an den Umbauten haben und 
             eventuell selbst verwendete Teile verbauen wollen.
-            Und als Informationsquelle für alle, die interessiert, wo die 
+            Und als Informationsquelle für alle, die interessiert sind wie es mit den 
             Umbauten der Fahrzeuge steht.</p>
             <p>&nbsp;</p>
             <h2>Wer steht hinter JPP-Boosted?</h2>
             <p>Ein Mitglied der Schokohasengang, welcher JP hoffentlich Freude 
-            bereiten und hoffentlich eine Art der Unterstützung bieten kann.</p>
+            bereiten und eine Art der Unterstützung bieten kann.</p>
         </div>
     );
 }

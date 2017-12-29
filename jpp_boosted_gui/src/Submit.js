@@ -51,7 +51,7 @@ class Submit extends React.Component {
     }
 
     getNewTuning() {
-        return { name: "", description: "", ps: "", nm: "", date: "", measuredTime: [], modifiedParts: [] };
+        return { name: "", description: "", ps: "", nm: "", date: "", youtubeUrl: "", measuredTime: [], modifiedParts: [] };
     }
 
     handleUserInput = (e) => {

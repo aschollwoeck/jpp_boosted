@@ -24,32 +24,33 @@ type Manufacturer struct {
 // Model ist ein Automodell eines bestimmten Herstellers
 // Jedes Projekt besitzt ein Model als Basis
 type Model struct {
-	ID                 int64   `json:"id"`
-	ManufacturerID     int64   `json:"manufacturerId"`
-	Name               string  `json:"name"`
-	BuildStart         string  `json:"buildStart"`
-	BuildEnd           string  `json:"buildEnd"`
-	SeriesCode         string  `json:"seriesCode"`
-	SeriesBuildStart   string  `json:"seriesBuildStart"`
-	SeriesBuildEnd     string  `json:"seriesBuildEnd"`
-	Type               string  `json:"type"`
-	BuildSeries        string  `json:"buildSeries"`
-	EngineType         string  `json:"engineType"`
-	Fuel               string  `json:"fuel"`
-	Fuel2              string  `json:"fuel2"`
-	EngineConstruction string  `json:"engineConstruction"`
-	Cylinder           int64   `json:"cylinder"`
-	Capacity           float32 `json:"capacity"`
-	KW                 float32 `json:"kw"`
-	PS                 float32 `json:"ps"`
-	Torque             float32 `json:"torque"`
-	DriveType          string  `json:"driveType"`
-	Gearbox            string  `json:"gearbox"`
-	Tare               float32 `json:"tare"`
-	WheelSize          string  `json:"wheelSize"`
-	Acceleration       float32 `json:"Acceleration"`
-	VMax               float32 `json:"vmax"`
-	ImageURL           string  `json:"imageUrl"`
+	ID                 int64        `json:"id"`
+	ManufacturerID     int64        `json:"manufacturerId"`
+	Name               string       `json:"name"`
+	BuildStart         string       `json:"buildStart"`
+	BuildEnd           string       `json:"buildEnd"`
+	SeriesCode         string       `json:"seriesCode"`
+	SeriesBuildStart   string       `json:"seriesBuildStart"`
+	SeriesBuildEnd     string       `json:"seriesBuildEnd"`
+	Type               string       `json:"type"`
+	BuildSeries        string       `json:"buildSeries"`
+	EngineType         string       `json:"engineType"`
+	Fuel               string       `json:"fuel"`
+	Fuel2              string       `json:"fuel2"`
+	EngineConstruction string       `json:"engineConstruction"`
+	Cylinder           int64        `json:"cylinder"`
+	Capacity           float32      `json:"capacity"`
+	KW                 float32      `json:"kw"`
+	PS                 float32      `json:"ps"`
+	Torque             float32      `json:"torque"`
+	DriveType          string       `json:"driveType"`
+	Gearbox            string       `json:"gearbox"`
+	Tare               float32      `json:"tare"`
+	WheelSize          string       `json:"wheelSize"`
+	Acceleration       float32      `json:"Acceleration"`
+	VMax               float32      `json:"vmax"`
+	ImageURL           string       `json:"imageUrl"`
+	Manufacturer       Manufacturer `json:"manufacturer"`
 }
 
 // Project ist ein Projekt in dem ein Auto modifiziert wird
@@ -64,6 +65,10 @@ type Project struct {
 	CarModel          Model    `json:"baseModel"`
 }
 
+type Projects struct {
+	Projects []Project
+}
+
 // Tuning ist eine Stufe in einem Projekt
 // z.B. Stage 1
 type Tuning struct {
@@ -74,6 +79,7 @@ type Tuning struct {
 	HorsePower  float32      `json:"horsePower"`
 	Torque      float32      `json:"torque"`
 	Date        string       `json:"date"`
+	YoutubeURL  string       `json:"youtubeUrl"`
 	Times       []TuningTime `json:"times"`
 	Parts       []TuningPart `json:"parts"`
 }
@@ -97,6 +103,66 @@ type TuningPart struct {
 	ManufacturerURL string `json:"manufacturerUrl"`
 }
 
+func (tuning *Tuning) AddTime(time TuningTime) []TuningTime {
+	tuning.Times = append(tuning.Times, time)
+	return tuning.Times
+}
+
+func (tuning *Tuning) AddPart(part TuningPart) []TuningPart {
+	tuning.Parts = append(tuning.Parts, part)
+	return tuning.Parts
+}
+
+func (project *Project) AddTuning(tuning Tuning) []Tuning {
+	project.Tunings = append(project.Tunings, tuning)
+	return project.Tunings
+}
+
+func (projects *Projects) AddProject(proj Project) []Project {
+	projects.Projects = append(projects.Projects, proj)
+	return projects.Projects
+}
+
+func (projects *Projects) GetProjectFromSlice(id int64) *Project {
+	for _, p := range projects.Projects {
+		if p.ID == id {
+			return &p
+		}
+	}
+
+	return nil
+}
+
+func (project *Project) GetTuning(id int64) *Tuning {
+	for _, t := range project.Tunings {
+		if t.ID == id {
+			return &t
+		}
+	}
+
+	return nil
+}
+
+func (tuning *Tuning) GetTime(id int64) *TuningTime {
+	for _, t := range tuning.Times {
+		if t.ID == id {
+			return &t
+		}
+	}
+
+	return nil
+}
+
+func (tuning *Tuning) GetPart(id int64) *TuningPart {
+	for _, p := range tuning.Parts {
+		if p.ID == id {
+			return &p
+		}
+	}
+
+	return nil
+}
+
 func main() {
 	// manufacturers = append(manufacturers, Manufacturer{ID: 1, Name: "Mercedes-Benz"})
 	// manufacturers = append(manufacturers, Manufacturer{ID: 2, Name: "BMW"})
@@ -108,6 +174,7 @@ func main() {
 	router.HandleFunc("/carmanufacturers/{id}/models", GetCarManufacturerModels).Methods("GET")
 	router.HandleFunc("/carmanufacturers/{id}", GetCarManufacturer).Methods("GET")
 	router.HandleFunc("/carmodels", PostCarModel).Methods("POST")
+	router.HandleFunc("/projects/include", GetProjectsInclude).Methods("GET")
 	router.HandleFunc("/projects", GetProjects).Methods("GET")
 	router.HandleFunc("/projects/{id}", GetProject).Methods("GET")
 	router.HandleFunc("/projects", PostProject).Methods("POST")
@@ -352,14 +419,75 @@ func PostCarModel(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-// GetProjects gibt alle vorhandenen Projekte zurück
-// Es werden alle zugehörigen Objekte (Tunings, Automodel, etc.) mit zurückgegeben
-func GetProjects(w http.ResponseWriter, r *http.Request) {
+// QueryProjects übernimmt die Suche in der Datenbank
+// Parameter werden ebenfalls behandelt
+func QueryProjects(r *http.Request) (*sql.Rows, error) {
 	db, err := GetDatabaseConnection()
 	checkErr(err)
 	defer db.Close()
 
-	rows, err := db.Query("SELECT ID, CarModelID, Title, ModificationStart, ModificationEnd FROM Project")
+	title := r.URL.Query().Get("title")
+	if title != "" {
+		title := "%" + title + "%"
+		return db.Query("SELECT ID, CarModelID, Title, ModificationStart, ModificationEnd FROM Project WHERE title like ? ORDER BY Title ASC", title)
+	}
+
+	return db.Query("SELECT ID, CarModelID, Title, ModificationStart, ModificationEnd FROM Project ORDER BY Title ASC")
+}
+
+// QueryProjectsInclude übernimmt die Suche in der Datenbank
+// Parameter werden ebenfalls behandelt
+func QueryProjectsInclude(r *http.Request) (*sql.Rows, error) {
+	db, err := GetDatabaseConnection()
+	checkErr(err)
+	defer db.Close()
+
+	search := r.URL.Query().Get("search")
+	if search != "" {
+		search := "%" + search + "%"
+		return db.Query(`
+				select 
+				p.id as projectid, p.carmodelid, p.title, 
+				c.id as carmodelid, c.buildSeries, c.imageUrl,
+				m.name, m.url,
+				t.id as tuningid, t.stage, t.description, t.horsepower, t.torque, t.date, t.youtubeurl, 
+				ti.id as timeid, ti.speedRange, ti.time, 
+				part.id as partid, part.Name, part.Url, part.Manufacturer, part.ManufacturerUrl
+				from Project p
+				left join CarModel c on c.id = p.carmodelid
+				left join CarManufacturer m on m.id = c.manufacturerid
+				left join Tuning t on t.projectid = p.id
+				left join Time ti on t.id = ti.TuningID
+				left join Part part on t.id = part.TuningID
+				where p.title like ? or m.name like ? or c.buildSeries like ? 
+				order by
+				p.id, c.id, t.id, ti.id, part.id
+				`, search, search, search)
+	}
+
+	return db.Query(`
+		select 
+		p.id as projectid, p.carmodelid, p.title, 
+		c.id as carmodelid, c.buildSeries, c.imageUrl,
+		m.name, m.url,
+		t.id as tuningid, t.stage, t.description, t.horsepower, t.torque, t.date, t.youtubeurl, 
+		ti.id as timeid, ti.speedRange, ti.time, 
+		part.id as partid, part.Name, part.Url, part.Manufacturer, part.ManufacturerUrl
+		from Project p
+		left join CarModel c on c.id = p.carmodelid
+		left join CarManufacturer m on m.id = c.manufacturerid
+		left join Tuning t on t.projectid = p.id
+		left join Time ti on t.id = ti.TuningID
+		left join Part part on t.id = part.TuningID
+		order by
+		p.id, c.id, t.id, ti.id, part.id
+		`)
+}
+
+// GetProjects gibt alle vorhandenen Projekte zurück
+// Es werden alle zugehörigen Objekte (Tunings, Automodel, etc.) mit zurückgegeben
+func GetProjects(w http.ResponseWriter, r *http.Request) {
+	rows, err := QueryProjects(r)
 	checkErr(err)
 	defer rows.Close()
 
@@ -373,6 +501,141 @@ func GetProjects(w http.ResponseWriter, r *http.Request) {
 
 	SetJSONContentHeader(w)
 	json.NewEncoder(w).Encode(projects)
+}
+
+// GetProjectsInclude gibt alle vorhandenen Projekte zurück
+// Es werden alle zugehörigen Objekte (Tunings, Automodel, etc.) mit zurückgegeben
+// func GetProjectsInclude(w http.ResponseWriter, r *http.Request) {
+// 	rows, err := QueryProjectsInclude(r)
+// 	checkErr(err)
+// 	defer rows.Close()
+
+// 	var projects Projects
+// 	for rows.Next() {
+// 		proj := Project{}
+// 		tuning := Tuning{}
+// 		tuningPart := TuningPart{}
+// 		tuningTime := TuningTime{}
+
+// 		err = rows.Scan(&proj.ID, &proj.CarModelID, &proj.Title, &proj.CarModel.ID, &proj.CarModel.BuildSeries, &proj.CarModel.ImageURL, &proj.CarModel.Manufacturer.Name, &proj.CarModel.Manufacturer.URL, &tuning.ID, &tuning.Stage, &tuning.Description, &tuning.HorsePower, &tuning.Torque, &tuning.Date, &tuning.YoutubeURL, &tuningTime.ID, &tuningTime.SpeedRange, &tuningTime.Time, &tuningPart.ID, &tuningPart.Name, &tuningPart.URL, &tuningPart.Manufacturer, &tuningPart.ManufacturerURL)
+
+// 		if tuningPart.ID > 0 {
+// 			tuning.Parts = append(tuning.Parts, tuningPart)
+// 		}
+// 		if tuningTime.ID > 0 {
+// 			tuning.Times = append(tuning.Times, tuningTime)
+// 		}
+// 		if tuning.ID > 0 {
+// 			proj.Tunings = append(proj.Tunings, tuning)
+// 		}
+
+// 		// Wenn Projekt noch nicht existiert, dann nehmen
+// 		// wir es im Array auf und gehen zur nächsten Zeile
+// 		tempProj := projects.GetProjectFromSlice(proj.ID)
+// 		if tempProj == nil {
+// 			projects.AddProject(proj)
+// 			continue
+// 		}
+
+// 		// Wenn Tuning noch nicht existiert, dann
+// 		// fügen wir es dem Projekt hinzu
+// 		tempTuning := tempProj.GetTuning(tuning.ID)
+// 		if tempTuning == nil {
+// 			tempProj.AddTuning(tuning)
+// 			continue
+// 		}
+
+// 		// Tuning existiert ebenfalls schon, also machen wir mit
+// 		// den Parts weiter
+// 		tempPart := tempTuning.GetPart(tuningPart.ID)
+// 		if tempPart == nil {
+// 			tempTuning.AddPart(tuningPart)
+// 		}
+
+// 		// Und jetzt noch für Times
+// 		tempTime := tempTuning.GetTime(tuningTime.ID)
+// 		if tempTime == nil {
+// 			log.Println(tempProj.Tunings[0].Times)
+// 			log.Println(tempTuning.Times)
+// 			tempTuning.AddTime(tuningTime)
+// 			log.Println(tempProj.Tunings[0].Times)
+// 			log.Println(tempTuning.Times)
+// 		}
+// 	}
+
+// 	SetJSONContentHeader(w)
+// 	json.NewEncoder(w).Encode(projects.Projects)
+// }
+
+func GetProjectsInclude(w http.ResponseWriter, r *http.Request) {
+	rows, err := QueryProjectsInclude(r)
+	checkErr(err)
+	defer rows.Close()
+
+	var projects Projects
+	for rows.Next() {
+		proj := Project{}
+		tuning := Tuning{}
+		tuningPart := TuningPart{}
+		tuningTime := TuningTime{}
+
+		err = rows.Scan(&proj.ID, &proj.CarModelID, &proj.Title, &proj.CarModel.ID, &proj.CarModel.BuildSeries, &proj.CarModel.ImageURL, &proj.CarModel.Manufacturer.Name, &proj.CarModel.Manufacturer.URL, &tuning.ID, &tuning.Stage, &tuning.Description, &tuning.HorsePower, &tuning.Torque, &tuning.Date, &tuning.YoutubeURL, &tuningTime.ID, &tuningTime.SpeedRange, &tuningTime.Time, &tuningPart.ID, &tuningPart.Name, &tuningPart.URL, &tuningPart.Manufacturer, &tuningPart.ManufacturerURL)
+
+		if tuningPart.ID > 0 {
+			tuning.Parts = append(tuning.Parts, tuningPart)
+		}
+		if tuningTime.ID > 0 {
+			tuning.Times = append(tuning.Times, tuningTime)
+		}
+		if tuning.ID > 0 {
+			proj.Tunings = append(proj.Tunings, tuning)
+		}
+
+		// Wenn Projekt noch nicht existiert, dann nehmen
+		// wir es im Array auf und gehen zur nächsten Zeile
+		tempProjIndex := -1
+		for i, p := range projects.Projects {
+			if p.ID == proj.ID {
+				tempProjIndex = i
+				break
+			}
+		}
+
+		if tempProjIndex == -1 {
+			projects.AddProject(proj)
+			continue
+		}
+
+		// Wenn Tuning noch nicht existiert, dann
+		// fügen wir es dem Projekt hinzu
+		tempTuningIndex := -1
+		for i, t := range projects.Projects[tempProjIndex].Tunings {
+			if t.ID == tuning.ID {
+				tempTuningIndex = i
+				break
+			}
+		}
+		if tempTuningIndex == -1 {
+			projects.Projects[tempProjIndex].AddTuning(tuning)
+			continue
+		}
+
+		// Tuning existiert ebenfalls schon, also machen wir mit
+		// den Parts weiter
+		tempPart := projects.Projects[tempProjIndex].Tunings[tempTuningIndex].GetPart(tuningPart.ID)
+		if tempPart == nil {
+			projects.Projects[tempProjIndex].Tunings[tempTuningIndex].AddPart(tuningPart)
+		}
+
+		// Und jetzt noch für Times
+		tempTime := projects.Projects[tempProjIndex].Tunings[tempTuningIndex].GetTime(tuningTime.ID)
+		if tempTime == nil {
+			projects.Projects[tempProjIndex].Tunings[tempTuningIndex].AddTime(tuningTime)
+		}
+	}
+
+	SetJSONContentHeader(w)
+	json.NewEncoder(w).Encode(projects.Projects)
 }
 
 // GetProject gibt ein vorhandenes Projekt zurück
@@ -474,11 +737,11 @@ func InsertTuning(tun *Tuning) (sql.Result, error) {
 	checkErr(err)
 	defer db.Close()
 
-	stmt, err := db.Prepare("INSERT INTO Tuning(projectid, stage, description, horsepower, torque, date) VALUES (?,?,?,?,?,?)")
+	stmt, err := db.Prepare("INSERT INTO Tuning(projectid, stage, description, horsepower, torque, date, youtubeurl) VALUES (?,?,?,?,?,?,?)")
 	checkErr(err)
 	defer stmt.Close()
 	log.Println(tun)
-	return stmt.Exec(tun.ProjectID, tun.Stage, tun.Description, tun.HorsePower, tun.Torque, tun.Date)
+	return stmt.Exec(tun.ProjectID, tun.Stage, tun.Description, tun.HorsePower, tun.Torque, tun.Date, tun.YoutubeURL)
 }
 
 // PostTuning erstellt ein neues Tuning

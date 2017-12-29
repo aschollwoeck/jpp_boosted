@@ -30,7 +30,7 @@ class Footer extends React.Component {
                             </div>
                 </div>
                 <div className="mt-1">
-                    <a href="/">Steuert bei zu Kaffee oder helft bei Serverkosten</a>
+                    <a href="/">Steuer bei zu Kaffee oder helft bei Serverkosten</a>
                     </div>
                 <div className="mt-1">
                     &copy; {currentDate} jpp-boosted.de

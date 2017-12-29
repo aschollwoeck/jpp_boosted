@@ -3,41 +3,70 @@ import './App.css';
 import Header from './Header';
 import Footer from './Footer';
 import Search from './Search';
-import CarOverview from './CarOverview';
+import ProjectOverview from './ProjectOverview';
 import Home from './Home';
 import Privacy from './Privacy';
 import Submit from './Submit';
 import About from './About';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      projects: []
+    };
+
+    var match = new RegExp("/search/(.+)", "i").exec(window.location.href);
+    if (match != null) {
+      fetch("/projects/include?search=" + match[1])
+        .then(resp => resp.json())
+        .then(data => {
+          this.setState({ projects: data });
+
+        })
+        .catch(e => console.log(e));
+      // getProjects(match[1]).then(p => this.setState({ projects: p }));
+    }
+  }
+
   performSearch(t) {
     window.location = "/search/" + t;
   }
 
   render() {
     // let docId = 0;
-    var match = new RegExp("/search/([0-9a-zA-Z]+)", "i").exec(window.location.href);
+    var match = new RegExp("/search/(.+)", "i").exec(window.location.href);
     if (match != null) {
-      const cars = getVideos().filter(v => v.baseModel.manufacturer.toLowerCase().indexOf(match[1]) > -1).map(c => {
-        return (
-          <CarOverview key={c.id} car={c} />
-        );
-      });
+      // const projects = getVideos().filter(v => v.baseModel.manufacturer.toLowerCase().indexOf(match[1]) > -1).map(p => {
+      //   return (
+      //     <ProjectOverview key={"project" + p.id} project={p} />
+      //   );
+      // });
+      var projects = "";
+      
+      if(this.state.projects !== undefined) {
+        projects = this.state.projects.map(p => {
+          return (
+            <ProjectOverview key={"project" + p.id} project={p} />
+          );
+        });
+      }
       return (
         <div className="App">
           <Header />
           <div className="jpp-content">
             <div className="container">
               <Search onSubmit={this.performSearch} searchTerm={match[1]} />
-              {cars}
+              {projects}
             </div>
           </div>
           <Footer />
         </div>
       );
+
     }
 
-    if(window.location.href.indexOf("datenschutz") > 0) {
+    if (window.location.href.indexOf("datenschutz") > 0) {
       return (
         <div className="App">
           <Header />
@@ -51,7 +80,7 @@ class App extends Component {
       );
     }
 
-    if(window.location.href.indexOf("submit") > 0) {
+    if (window.location.href.indexOf("submit") > 0) {
       return (
         <div className="App">
           <Header />
@@ -65,7 +94,7 @@ class App extends Component {
       );
     }
 
-    if(window.location.href.indexOf("about") > 0) {
+    if (window.location.href.indexOf("about") > 0) {
       return (
         <div className="App">
           <Header />

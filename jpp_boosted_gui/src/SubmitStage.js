@@ -93,6 +93,14 @@ class SubmitStage extends React.Component {
                             onChange={this.handleUserInput} />
                     </div>
                 </div>
+                <div className="form-group">
+                    <div>
+                        <label className="keyName" htmlFor="youtubeUrl">YouTube</label>
+                        <textarea name="youtubeUrl" placeholder="wwww.youtube.com/..."
+                            value={this.state.tuning.youtubeUrl}
+                            onChange={this.handleUserInput} />
+                    </div>
+                </div>
                 <h5>Messungen</h5>
                 <div className="form-group">
                     <div>
