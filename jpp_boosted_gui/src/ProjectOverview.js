@@ -1,6 +1,7 @@
 import React from 'react';
-import './ProjectOverview.css';
+import moment, { max } from 'moment';
 
+import './ProjectOverview.css';
 import c63amg from './c63_amg.jpg';
 
 class ProjectOverview extends React.Component {
@@ -91,14 +92,16 @@ class ProjectOverview extends React.Component {
         var stages = "";
         if (this.props.project.tunings != null) {
             stages = this.props.project.tunings.map(t => {
-                const power = <div className="mt-1 row">
-                    <div className="ml-3">PS: {t.horsePower}</div>
-                    <div className="ml-2">NM: {t.torque}</div>
-                    <div className="ml-2">Date: {t.date}</div>
-                </div>
+                const power = <div className="mt-1">
+                                <div className="row">
+                                    <div className="ml-3">PS: {t.horsePower}</div>
+                                    <div className="ml-2">NM: {t.torque}</div>
+                                </div>
+                                <div>Date: {moment(t.date).format("MMM. YY")}</div>
+                            </div>
                 const times = t.times.map(m => {
                     return (
-                        <div key={m.id}>{m.speedRange}: {m.time} Sekunden</div>
+                        <div key={m.id}><span className="speedRangeKey">{m.speedRange}</span>: {m.time} Sekunden</div>
                     );
                 });
                 const modParts = t.parts.map(p => {
@@ -124,21 +127,41 @@ class ProjectOverview extends React.Component {
                             <div className="mt-1">
                                 {power}
                             </div>
-                            <div className="mt-1">
+                            <div className="mt-2">
+                                <div>
+                                    <strong>Gemessene Zeiten (km/h)</strong>
+                                </div>
                                 {times}
                             </div>
-                            <div className="mt-1">
+                            <div className="mt-2">
+                                <div>
+                                    <strong>Verbaute Teile</strong>
+                                </div>
                                 {modParts}
                             </div>
                         </div>
-                        <div className=" mt-1">
+                        <div className="mt-1">
                             {ytEmbedded}
                         </div>
                     </div>
                 );
             });
         }
+
+        var modTimespan = "";
+        if(this.props.project.tunings) {
+            var dates = this.props.project.tunings.map(t => new Date(t.date));
+            var maxDate=new Date(Math.max.apply(null,dates));
+            var minDate=new Date(Math.min.apply(null,dates));
+            if(moment(maxDate).format("MMM. YY") === moment(minDate).format("MMM. YY")) {
+                modTimespan = moment(minDate).format("MMM. YY")
+            } else {
+                modTimespan = moment(minDate).format("MMM. YY") + " - " + moment(maxDate).format("MMM. YY")
+            }
+        }
+
         const imgUrl = this.getCarImage();
+        
         return (
             <div className="jpp-search-result col-12">
                 <div className="">
@@ -151,9 +174,10 @@ class ProjectOverview extends React.Component {
                             <img className="mr-3 jpp-image" src={imgUrl} alt="car" />
                         </div>
                         <div className="jpp-search-result-overview-content">
-                            <div>Model: {this.props.project.baseModel.name}</div>
+                            <div>Model: {this.props.project.baseModel.name} ({this.props.project.baseModel.seriesCode})</div>
                             <div>Hersteller: {this.props.project.baseModel.manufacturer.name}</div>
-                            <div>Baujahr: {this.props.project.baseModel.buildStart}</div>
+                            <div>Baujahr: {this.props.project.buildYear}</div>
+                            <div>Bauzeit: {modTimespan}</div>
                         </div>
                     </div>
                     <div className="jpp-search-result-stages">

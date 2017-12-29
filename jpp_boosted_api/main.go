@@ -47,7 +47,7 @@ type Model struct {
 	Gearbox            string       `json:"gearbox"`
 	Tare               float32      `json:"tare"`
 	WheelSize          string       `json:"wheelSize"`
-	Acceleration       float32      `json:"Acceleration"`
+	Acceleration       float32      `json:"acceleration"`
 	VMax               float32      `json:"vmax"`
 	ImageURL           string       `json:"imageUrl"`
 	Manufacturer       Manufacturer `json:"manufacturer"`
@@ -55,16 +55,17 @@ type Model struct {
 
 // Project ist ein Projekt in dem ein Auto modifiziert wird
 type Project struct {
-	ID                int64    `json:"id"`
-	CarModelID        int64    `json:"carModelId"`
-	Title             string   `json:"title"`
-	ModificationStart string   `json:"modificationStart"`
-	ModificationEnd   string   `json:"modificationEnd"`
-	Rating            float32  `json:"rating"`
-	Tunings           []Tuning `json:"tunings"`
-	CarModel          Model    `json:"baseModel"`
+	ID           int64    `json:"id"`
+	CarModelID   int64    `json:"carModelId"`
+	Title        string   `json:"title"`
+	Rating       float32  `json:"rating"`
+	BuildYear    int64    `json:"buildYear"`
+	ProjImageURL string   `json:"projImageUrl"`
+	Tunings      []Tuning `json:"tunings"`
+	CarModel     Model    `json:"baseModel"`
 }
 
+// Projects stellt ein Slice für Projekte dar
 type Projects struct {
 	Projects []Project
 }
@@ -429,10 +430,10 @@ func QueryProjects(r *http.Request) (*sql.Rows, error) {
 	title := r.URL.Query().Get("title")
 	if title != "" {
 		title := "%" + title + "%"
-		return db.Query("SELECT ID, CarModelID, Title, ModificationStart, ModificationEnd FROM Project WHERE title like ? ORDER BY Title ASC", title)
+		return db.Query("SELECT DISTINCT ID, CarModelID, Title, BuildYear, ImageUrl FROM Project WHERE title like ? ORDER BY Title ASC", title)
 	}
 
-	return db.Query("SELECT ID, CarModelID, Title, ModificationStart, ModificationEnd FROM Project ORDER BY Title ASC")
+	return db.Query("SELECT ID, CarModelID, Title, BuildYear, ImageUrl FROM Project ORDER BY Title ASC")
 }
 
 // QueryProjectsInclude übernimmt die Suche in der Datenbank
@@ -447,8 +448,8 @@ func QueryProjectsInclude(r *http.Request) (*sql.Rows, error) {
 		search := "%" + search + "%"
 		return db.Query(`
 				select 
-				p.id as projectid, p.carmodelid, p.title, 
-				c.id as carmodelid, c.buildSeries, c.imageUrl,
+				p.id as projectid, p.carmodelid, p.title, p.buildYear, p.imageUrl as projimgurl, 
+				c.id as carmodelid, c.buildSeries, c.imageUrl, c.name, c.seriescode, c.buildstart, c.buildend, c.seriesbuildstart, c.seriesbuildend, c.type, c.Cylinder, c.KW, c.PS, c.Torque, c.Tare, c.Wheelsize, c.Acceleration, c.VMax, 
 				m.name, m.url,
 				t.id as tuningid, t.stage, t.description, t.horsepower, t.torque, t.date, t.youtubeurl, 
 				ti.id as timeid, ti.speedRange, ti.time, 
@@ -467,8 +468,8 @@ func QueryProjectsInclude(r *http.Request) (*sql.Rows, error) {
 
 	return db.Query(`
 		select 
-		p.id as projectid, p.carmodelid, p.title, 
-		c.id as carmodelid, c.buildSeries, c.imageUrl,
+		p.id as projectid, p.carmodelid, p.title, p.buildYear, p.imageUrl as projimgurl, 
+		c.id as carmodelid, c.buildSeries, c.imageUrl, c.name, c.seriescode, c.buildstart, c.buildend, c.seriesbuildstart, c.seriesbuildend, c.type, c.Cylinder, c.KW, c.PS, c.Torque, c.Tare, c.Wheelsize, c.Acceleration, c.VMax, 
 		m.name, m.url,
 		t.id as tuningid, t.stage, t.description, t.horsepower, t.torque, t.date, t.youtubeurl, 
 		ti.id as timeid, ti.speedRange, ti.time, 
@@ -494,7 +495,7 @@ func GetProjects(w http.ResponseWriter, r *http.Request) {
 	var projects []Project
 	for rows.Next() {
 		proj := Project{}
-		err = rows.Scan(&proj.ID, &proj.CarModelID, &proj.Title, &proj.ModificationStart, &proj.ModificationEnd)
+		err = rows.Scan(&proj.ID, &proj.CarModelID, &proj.Title, &proj.BuildYear, &proj.ProjImageURL)
 
 		projects = append(projects, proj)
 	}
@@ -578,8 +579,12 @@ func GetProjectsInclude(w http.ResponseWriter, r *http.Request) {
 		tuning := Tuning{}
 		tuningPart := TuningPart{}
 		tuningTime := TuningTime{}
-
-		err = rows.Scan(&proj.ID, &proj.CarModelID, &proj.Title, &proj.CarModel.ID, &proj.CarModel.BuildSeries, &proj.CarModel.ImageURL, &proj.CarModel.Manufacturer.Name, &proj.CarModel.Manufacturer.URL, &tuning.ID, &tuning.Stage, &tuning.Description, &tuning.HorsePower, &tuning.Torque, &tuning.Date, &tuning.YoutubeURL, &tuningTime.ID, &tuningTime.SpeedRange, &tuningTime.Time, &tuningPart.ID, &tuningPart.Name, &tuningPart.URL, &tuningPart.Manufacturer, &tuningPart.ManufacturerURL)
+		err = rows.Scan(&proj.ID, &proj.CarModelID, &proj.Title, &proj.BuildYear, &proj.ProjImageURL,
+			&proj.CarModel.ID, &proj.CarModel.BuildSeries, &proj.CarModel.ImageURL, &proj.CarModel.Name, &proj.CarModel.SeriesCode, &proj.CarModel.BuildStart, &proj.CarModel.BuildEnd, &proj.CarModel.SeriesBuildStart, &proj.CarModel.SeriesBuildEnd, &proj.CarModel.Type, &proj.CarModel.Cylinder, &proj.CarModel.KW, &proj.CarModel.PS, &proj.CarModel.Torque, &proj.CarModel.Tare, &proj.CarModel.WheelSize, &proj.CarModel.Acceleration, &proj.CarModel.VMax,
+			&proj.CarModel.Manufacturer.Name, &proj.CarModel.Manufacturer.URL,
+			&tuning.ID, &tuning.Stage, &tuning.Description, &tuning.HorsePower, &tuning.Torque, &tuning.Date, &tuning.YoutubeURL,
+			&tuningTime.ID, &tuningTime.SpeedRange, &tuningTime.Time,
+			&tuningPart.ID, &tuningPart.Name, &tuningPart.URL, &tuningPart.Manufacturer, &tuningPart.ManufacturerURL)
 
 		if tuningPart.ID > 0 {
 			tuning.Parts = append(tuning.Parts, tuningPart)
@@ -648,12 +653,12 @@ func GetProject(w http.ResponseWriter, r *http.Request) {
 	checkErr(err)
 	defer db.Close()
 
-	stmt, err := db.Prepare("SELECT ID, CarModelID, Title, ModificationStart, ModificationEnd FROM Project WHERE ID = ?")
+	stmt, err := db.Prepare("SELECT ID, CarModelID, Title, BuildYear, ImageUrl FROM Project WHERE ID = ?")
 	checkErr(err)
 	defer stmt.Close()
 
 	var proj Project
-	err = stmt.QueryRow(i).Scan(&proj.ID, &proj.CarModelID, &proj.Title, &proj.ModificationStart, &proj.ModificationEnd)
+	err = stmt.QueryRow(i).Scan(&proj.ID, &proj.CarModelID, &proj.Title, &proj.BuildYear, &proj.ProjImageURL)
 	if err == sql.ErrNoRows {
 		// log.Fatal(err)
 		w.WriteHeader(http.StatusNotFound)
@@ -670,11 +675,11 @@ func InsertProject(proj *Project) (sql.Result, error) {
 	checkErr(err)
 	defer db.Close()
 
-	stmt, err := db.Prepare("INSERT INTO Project(carmodelid, title, modificationstart, modificationend, rating) VALUES (?,?,?,?,?)")
+	stmt, err := db.Prepare("INSERT INTO Project(carmodelid, title, rating, buildyear, imageUrl) VALUES (?,?,?,?,?,?)")
 	checkErr(err)
 	defer stmt.Close()
 	log.Println(proj)
-	return stmt.Exec(proj.CarModelID, proj.Title, proj.ModificationStart, proj.ModificationEnd, proj.Rating)
+	return stmt.Exec(proj.CarModelID, proj.Title, proj.Rating, proj.BuildYear, proj.ProjImageURL)
 }
 
 // PostProject erzeugt ein neues Projekt

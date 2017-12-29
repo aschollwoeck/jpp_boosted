@@ -9,3 +9,19 @@
     min-width: 115px;
 }
 
+.divFlex {
+    display: flex;
+}
+
+.submit-react-autosuggest__input {
+    /* width: 240px; */
+    height: 30px;
+    /* padding: 10px 20px; */
+    padding: 0px 10px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    -webkit-appearance: none;
+  }

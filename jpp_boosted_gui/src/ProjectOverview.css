@@ -2,7 +2,7 @@
     border: 1px solid #42404033;
     margin-top: 10px;
     margin-bottom: 10px;
-    background-color: #7e7a7a17;
+    background-color: #bbb0b017;
 }
 
 .jpp-search-result-header {
@@ -24,6 +24,11 @@
     .jpp-search-result-overview-content {
         padding-left: 5px;
     }
+}
+
+.speedRangeKey {
+    display: inline-block;
+    min-width: 75px;
 }
 
 .jpp-search-result-overview-image {

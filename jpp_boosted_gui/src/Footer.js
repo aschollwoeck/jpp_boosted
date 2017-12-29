@@ -29,9 +29,7 @@ class Footer extends React.Component {
                         Schreib eine <a href="mailto:contact@jpp-boosted.de">Mail</a>!
                             </div>
                 </div>
-                <div className="mt-1">
-                    <a href="/">Steuer bei zu Kaffee oder helft bei Serverkosten</a>
-                    </div>
+                
                 <div className="mt-1">
                     &copy; {currentDate} jpp-boosted.de
                             </div>
@@ -39,4 +37,7 @@ class Footer extends React.Component {
         );
     }
 }
+// <div className="mt-1">
+//                     <a href="/">Steuer bei zu Kaffee oder helft bei Serverkosten</a>
+//                     </div>
 export default Footer;

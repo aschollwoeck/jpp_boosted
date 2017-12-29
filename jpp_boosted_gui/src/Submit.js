@@ -40,7 +40,10 @@ class Submit extends React.Component {
             title: "",
             manufacturer: "",
             model: "",
-            tuning: [this.getNewTuning()],
+            buildYear: "",
+            imageUrl: "",
+            // tuning: [this.getNewTuning()],
+            tuning: [],
             selectedManufacturer: undefined,
             possibleManufacturers: [],
             manuValue: "",
@@ -86,7 +89,18 @@ class Submit extends React.Component {
     }
 
     onModelChange = (event, value) => {
-        this.setState({ selectedModel: this.state.possibleModels.find(m => m.buildSeries === value.newValue), modelValue: value.newValue });
+        const model = this.state.possibleModels.find(m => m.buildSeries === value.newValue);
+        this.setState({ selectedModel: model, modelValue: value.newValue });
+        if (this.state.tuning.length === 0 && model !== undefined) {
+            var t = this.getNewTuning();
+            t.name = "Serie";
+            t.nm = model.torque;
+            t.ps = model.ps;
+            t.measuredTime = [{ speedRange: "0-100", time: model.acceleration }];
+            console.log(t);
+            this.setState({ tuning: [t] });
+        }
+
         getManuModelsSuggestions(this.state.selectedManufacturer, value.newValue).then(models => this.setState({ possibleModels: models }));
     }
 
@@ -101,6 +115,8 @@ class Submit extends React.Component {
         var project = {
             carmodelid: this.state.selectedModel.id,
             title: this.state.title,
+            buildYear: parseInt(this.state.buildSeries, 10),
+            imageUrl: this.state.imageUrl,
             tunings: this.state.tuning.map(t => {
                 var temp = {
                     stage: t.name,
@@ -142,13 +158,15 @@ class Submit extends React.Component {
     }
 
     render() {
-        const stages = this.state.tuning.map((t, i) => {
-            return (
-                <SubmitStage key={"tuning" + i} index={i} tuning={t} onChange={this.tuningChanged} />
-            );
-        });
+        var stages = "";
+        if (this.state.tuning.length > 0) {
+            stages = this.state.tuning.map((t, i) => {
+                return (
+                    <SubmitStage key={"tuning" + i} index={i} tuning={t} onChange={this.tuningChanged} />
+                );
+            });
+        }
         var umbauten = "";
-
         if (this.state.selectedManufacturer !== undefined && this.state.selectedModel !== undefined) {
             umbauten = (<div>
                 <h4>Umbauten</h4>
@@ -164,16 +182,21 @@ class Submit extends React.Component {
             </div>);
         }
 
-        const inputPropsManu = {
-            placeholder: 'BMW',
-            value: this.state.manuValue,
-            onChange: this.onManuChange
-        };
-
-        const inputPropsModel = {
-            placeholder: 'M3',
-            value: this.state.modelValue,
-            onChange: this.onModelChange
+        const autoSuggestTheme = {
+            container: "react-autosuggest__container",
+            containerOpen: 'react-autosuggest__container--open',
+            input: "submit-react-autosuggest__input",
+            inputOpen: 'react-autosuggest__input--open',
+            inputFocused: 'react-autosuggest__input--focused',
+            suggestionsContainer: 'react-autosuggest__suggestions-container',
+            suggestionsContainerOpen: 'react-autosuggest__suggestions-container--open',
+            suggestionsList: 'react-autosuggest__suggestions-list',
+            suggestion: 'react-autosuggest__suggestion',
+            suggestionFirst: 'react-autosuggest__suggestion--first',
+            suggestionHighlighted: 'react-autosuggest__suggestion--highlighted',
+            sectionContainer: 'react-autosuggest__section-container',
+            sectionContainerFirst: 'react-autosuggest__section-container--first',
+            sectionTitle: 'react-autosuggest__section-title'
         };
 
         return (
@@ -181,14 +204,16 @@ class Submit extends React.Component {
                 <h2>Neues Fahrzeug</h2>
                 <div className="form-group">
                     <label className="keyName" htmlFor="title">Titel</label>
-                    <input type="text" name="title" placeholder="BMW V8"
+                    <input className="submit-react-autosuggest__input" type="text" name="title" placeholder="BMW V8"
                         value={this.state.title}
                         onChange={this.handleUserInput} />
                 </div>
 
                 <div className="form-group">
-                    <div>
-                        <label className="keyName" htmlFor="manufacturer">Hersteller</label>
+                    <div className="divFlex">
+                        <div>
+                            <label className="keyName" htmlFor="manufacturer">Hersteller</label>
+                        </div>
                         <Autosuggest
                             id="manufacturer"
                             suggestions={this.state.possibleManufacturers}
@@ -201,12 +226,18 @@ class Submit extends React.Component {
                                 <div>
                                     {item.name}
                                 </div>)}
-                            inputProps={inputPropsManu}
+                            inputProps={{
+                                placeholder: 'BMW',
+                                value: this.state.manuValue,
+                                onChange: this.onManuChange
+                            }}
+                            theme={autoSuggestTheme}
                         />
-
                     </div>
-                    <div>
-                        <label className="keyName" htmlFor="model">Model</label>
+                    <div className="divFlex">
+                        <div>
+                            <label className="keyName" htmlFor="model">Model</label>
+                        </div>
                         <Autosuggest
                             id="model"
                             suggestions={this.state.possibleModels}
@@ -217,11 +248,29 @@ class Submit extends React.Component {
                             getSuggestionValue={(item) => `${item.buildSeries}`}
                             renderSuggestion={(item) => (
                                 <div>
-                                    {item.buildSeries}
+                                    {item.name} {item.type} ({item.seriesCode} - {item.buildStart} - {item.buildEnd})
                                 </div>)}
-                            inputProps={inputPropsModel}
+                            inputProps={{
+                                placeholder: 'M3',
+                                value: this.state.modelValue,
+                                onChange: this.onModelChange,
+                                disabled: !this.state.selectedManufacturer
+                            }}
+                            theme={autoSuggestTheme}
                         />
                     </div>
+                </div>
+                <div className="form-group">
+                    <label className="keyName" htmlFor="buildYear">Baujahr</label>
+                    <input className="submit-react-autosuggest__input" type="date" name="buildYear"
+                        value={this.state.buildYear}
+                        onChange={this.handleUserInput} />
+                </div>
+                <div className="form-group">
+                    <label className="keyName" htmlFor="imageUrl">Bild Url</label>
+                    <input className="submit-react-autosuggest__input" type="text" name="imageUrl"
+                        value={this.state.imageUrl}
+                        onChange={this.handleUserInput} />
                 </div>
                 {umbauten}
             </form>
