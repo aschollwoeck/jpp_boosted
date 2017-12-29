@@ -7,7 +7,7 @@ async function getProjectSuggestions(value) {
     if (value === undefined || value.value === undefined)
         return [];
 
-    var prom = await fetch("/projects?title=" + value.value)
+    var prom = await fetch("/api/projects?title=" + value.value)
         .then(r => r.json())
         .then(json => json)
         .catch(e => console.log(e));
@@ -26,19 +26,8 @@ class Search extends React.Component {
             selected: undefined,
          };
 
-        this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
+        // this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
         this.submit = this.submit.bind(this);
-    }
-
-    handleSearchTermChange(e) {
-        this.setState({
-            searchTerm: e.target.value
-        });
-
-        // fetch(`/api/projects?title=${e.target.value}`)
-        // .then(r => r.json())
-        // .then(json => this.setState({projectsList: json}))
-        // .catch(e => console.log(e));
     }
 
     submit(e) {
