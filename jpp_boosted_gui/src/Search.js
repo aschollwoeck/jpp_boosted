@@ -35,7 +35,7 @@ class Search extends React.Component {
             searchTerm: e.target.value
         });
 
-        // fetch(`/projects?title=${e.target.value}`)
+        // fetch(`/api/projects?title=${e.target.value}`)
         // .then(r => r.json())
         // .then(json => this.setState({projectsList: json}))
         // .catch(e => console.log(e));

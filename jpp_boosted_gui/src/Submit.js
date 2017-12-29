@@ -9,7 +9,7 @@ async function getManuSuggestions(value) {
     if (value === undefined || value.value === undefined)
         return [];
 
-    var prom = await fetch("/carmanufacturers?name=" + value.value)
+    var prom = await fetch("/api/carmanufacturers?name=" + value.value)
         .then(r => r.json())
         .then(json => json)
         .catch(e => console.log(e));
@@ -23,7 +23,7 @@ async function getManuModelsSuggestions(manu, value) {
     if (manu === undefined || value === undefined || value.value === undefined)
         return [];
 
-    var prom = await fetch(`/carmanufacturers/${manu.id}/models?name=${value.value}`)
+    var prom = await fetch(`/api/carmanufacturers/${manu.id}/models?name=${value.value}`)
         .then(r => r.json())
         .then(json => json)
         .catch(e => console.log(e));
@@ -62,7 +62,7 @@ class Submit extends React.Component {
         const value = e.target.value;
 
         if (name === "manufacturer") {
-            fetch("/carmanufacturers?name=" + e.target.value)
+            fetch("/api/carmanufacturers?name=" + e.target.value)
                 .then(r => r.json())
                 .then(json => console.log(json))
                 .catch(e => console.log(e));
@@ -145,7 +145,7 @@ class Submit extends React.Component {
 
         // console.log(JSON.stringify(project));
 
-        fetch("/projects", {
+        fetch("/api/projects", {
             method: "POST",
             headers: {
                 'Accept': 'application/json, text/plain, */*',

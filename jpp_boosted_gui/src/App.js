@@ -18,7 +18,7 @@ class App extends Component {
 
     var match = new RegExp("/search/(.+)", "i").exec(window.location.href);
     if (match != null) {
-      fetch("/projects/include?search=" + match[1])
+      fetch("/api/projects/include?search=" + match[1])
         .then(resp => resp.json())
         .then(data => {
           this.setState({ projects: data });
