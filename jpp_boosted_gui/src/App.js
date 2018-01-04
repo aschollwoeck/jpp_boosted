@@ -8,12 +8,12 @@ import Main from './Main';
 class App extends Component {
 
   render() {
-        return (
+    return (
       <div className="App">
         <Header />
         <div className="jpp-content">
-        <div className="container">
-          <Main />
+          <div className="container">
+            <Main />
           </div>
         </div>
         <Footer />
