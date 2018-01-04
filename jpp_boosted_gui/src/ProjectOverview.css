@@ -26,6 +26,10 @@
     }
 }
 
+.jpp-link-edit {
+    float: right;
+}
+
 .speedRangeKey {
     display: inline-block;
     min-width: 75px;

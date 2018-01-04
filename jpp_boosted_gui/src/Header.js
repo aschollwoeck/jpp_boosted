@@ -1,4 +1,6 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
+
 import logo from './jpp_small.png';
 import './Header.css';
 
@@ -8,7 +10,7 @@ class Header extends React.Component {
             <header>
                 <div className="header">
                     <div className="header-name">
-                        <a className="header-home-link" href="/">JPP-Boosted!</a>
+                        <Link className="header-home-link" to="/">JPP-Boosted!</Link>
                     </div>
                     <div className="header-logo">
                         <a target="blank" href="https://jp-performance.de">

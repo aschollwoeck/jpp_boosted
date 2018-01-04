@@ -18,70 +18,72 @@ class SubmitStage extends React.Component {
         this.props.onChange(this.props.index, this.state.tuning);
     }
 
-    //             speedRange: "0-200",
-    //             time: "10.3",
-    //             youtubeUrl: ""
     getNewTime() {
-        return { speedRange: "", time: "", youtubeUrl: "" };
+        return { id: 0, speedRange: "", time: "", youtubeUrl: "" };
     }
 
     addTime = (e) => {
         e.preventDefault();
         const tuning = this.state.tuning;
-        tuning.measuredTime.push(this.getNewTime());
+        if(tuning.times === null) {
+            tuning.times = [];
+        }
+        tuning.times.push(this.getNewTime());
 
         this.setState({ tuning: tuning });
     }
 
-    // {
-    //     id: 1,
-    //     part: "Krümmer",
-    //     youtubeUrl: "",
-    //     manufacturer: "Hersteller",
-    //     manufacturerUrl: "",
-    //     partUrl: ""
-    //   }
     getNewPart() {
-        return { part: "", youtubeUrl: "", manufacturer: "", manufacturerUrl: "", partUrl: "" };
+        return { id: 0, name: "", youtubeUrl: "", manufacturer: "", manufacturerUrl: "", url: "" };
     }
 
     addPart = (e) => {
         e.preventDefault();
         const tuning = this.state.tuning;
-        tuning.modifiedParts.push(this.getNewPart());
+        if(tuning.parts === null) {
+            tuning.parts = [];
+        }
+        tuning.parts.push(this.getNewPart());
 
         this.setState({ tuning: tuning });
     }
 
     timeChanged = (index, value) => {
         const tuning = this.state.tuning;
-        tuning.measuredTime[index] = value;
-        this.setState({tuning: tuning});
+        tuning.times[index] = value;
+        this.setState({ tuning: tuning });
         this.props.onChange(this.props.index, this.state.tuning);
     }
 
     partChanged = (index, value) => {
         const tuning = this.state.tuning;
-        tuning.modifiedParts[index] = value;
-        this.setState({tuning: tuning});
+        tuning.parts[index] = value;
+        this.setState({ tuning: tuning });
         this.props.onChange(this.props.index, this.state.tuning);
     }
 
     render() {
-        const times = this.state.tuning.measuredTime.map((m, i) => {
-            return <SubmitStageTime key={"time" + i} index={i} measuredTime={m} onChange={this.timeChanged} />
-        });
-        const parts = this.state.tuning.modifiedParts.map((p, i) => {
-            return <SubmitStagePart key={"part" + i} index={i} modifiedPart={p} onChange={this.partChanged} />
-        });
+        var times = "";
+        if (this.state.tuning.times !== null) {
+            times = this.state.tuning.times.map((m, i) => {
+                return <SubmitStageTime key={"time" + i} index={i} time={m} onChange={this.timeChanged} />
+            });
+        }
+
+        var parts = "";
+        if (this.state.tuning.parts !== null) {
+            parts = this.state.tuning.parts.map((p, i) => {
+                return <SubmitStagePart key={"part" + i} index={i} part={p} onChange={this.partChanged} />
+            });
+        }
 
         return (
             <div>
                 <div className="form-group">
                     <div>
-                        <label className="keyName" htmlFor="name">Name</label>
-                        <input type="text" name="name" placeholder="Serie, Stage 1..."
-                            value={this.state.tuning.name}
+                        <label className="keyName" htmlFor="stage">Name</label>
+                        <input type="text" name="stage" placeholder="Serie, Stage 1..."
+                            value={this.state.tuning.stage}
                             onChange={this.handleUserInput} />
                     </div>
                 </div>
@@ -104,15 +106,15 @@ class SubmitStage extends React.Component {
                 <h5>Messungen</h5>
                 <div className="form-group">
                     <div>
-                        <label className="keyName" htmlFor="ps">PS</label>
-                        <input type="text" name="ps" placeholder="414"
-                            value={this.state.tuning.ps}
+                        <label className="keyName" htmlFor="horsePower">PS</label>
+                        <input type="text" name="horsePower" placeholder="414"
+                            value={this.state.tuning.horsePower}
                             onChange={this.handleUserInput} />
                     </div>
                     <div>
-                        <label className="keyName" htmlFor="nm">NM</label>
-                        <input type="text" name="nm" placeholder="510"
-                            value={this.state.tuning.nm}
+                        <label className="keyName" htmlFor="torque">NM</label>
+                        <input type="text" name="torque" placeholder="510"
+                            value={this.state.tuning.torque}
                             onChange={this.handleUserInput} />
                     </div>
                 </div>

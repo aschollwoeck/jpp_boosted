@@ -37,6 +37,7 @@ class Submit extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            id: 0,
             title: "",
             manufacturer: "",
             model: "",
@@ -51,10 +52,21 @@ class Submit extends React.Component {
             possibleModels: [],
             modelValue: ""
         }
+
+        if (this.props.match.params.id !== undefined) {
+            fetch(`/api/projects/${this.props.match.params.id}/include`)
+                .then(r => r.json())
+                .then(json => {
+                    console.log(json);
+                    this.setState({ id: json.id, tuning: json.tunings, title: json.title, buildYear: json.buildYear, imageUrl: json.projImageUrl, selectedManufacturer: json.baseModel.manufacturer, selectedModel: json.baseModel });
+
+                })
+                .catch(e => console.log(e));
+        }
     }
 
     getNewTuning() {
-        return { name: "", description: "", ps: "", nm: "", date: "", youtubeUrl: "", measuredTime: [], modifiedParts: [] };
+        return { id: 0, name: "", description: "", horsePower: "", torque: "", date: "", youtubeUrl: "", times: [], parts: [] };
     }
 
     handleUserInput = (e) => {
@@ -93,10 +105,10 @@ class Submit extends React.Component {
         this.setState({ selectedModel: model, modelValue: value.newValue });
         if (this.state.tuning.length === 0 && model !== undefined) {
             var t = this.getNewTuning();
-            t.name = "Serie";
-            t.nm = model.torque;
-            t.ps = model.ps;
-            t.measuredTime = [{ speedRange: "0-100", time: model.acceleration }];
+            t.stage = "Werksangabe";
+            t.torque = model.torque;
+            t.horsePower = model.ps;
+            t.times = [{ speedRange: "0-100", time: model.acceleration }];
             console.log(t);
             this.setState({ tuning: [t] });
         }
@@ -113,29 +125,32 @@ class Submit extends React.Component {
         e.preventDefault();
 
         var project = {
+            id: this.state.id,
             carmodelid: this.state.selectedModel.id,
             title: this.state.title,
-            buildYear: parseInt(this.state.buildSeries, 10),
+            buildYear: parseInt(this.state.buildYear, 10),
             imageUrl: this.state.imageUrl,
             tunings: this.state.tuning.map(t => {
                 var temp = {
-                    stage: t.name,
+                    id: t.id,
+                    stage: t.stage,
                     description: t.description,
-                    horsePower: parseInt(t.ps, 10),
-                    torque: parseInt(t.nm, 10),
+                    horsePower: parseInt(t.horsePower, 10),
+                    torque: parseInt(t.torque, 10),
                     date: t.date,
+                    youtubeUrl: t.youtubeUrl,
                     parts: [],
                     times: [],
                 };
 
-                if (t.modifiedParts != null) {
-                    temp.parts = t.modifiedParts.map(p => {
-                        return { name: p.part, url: p.partUrl, manufacturer: p.manufacturer, manufacturerurl: p.manufacturerUrl };
+                if (t.parts != null) {
+                    temp.parts = t.parts.map(p => {
+                        return { id: p.id, name: p.name, url: p.url, manufacturer: p.manufacturer, manufacturerUrl: p.manufacturerUrl };
                     });
                 }
-                if (t.measuredTime != null) {
-                    temp.times = t.measuredTime.map(mt => {
-                        return { speedRange: mt.speedRange, time: parseFloat(mt.time) };
+                if (t.times != null) {
+                    temp.times = t.times.map(mt => {
+                        return { id: mt.id, speedRange: mt.speedRange, time: parseFloat(mt.time) };
                     });
                 }
 
@@ -262,7 +277,7 @@ class Submit extends React.Component {
                 </div>
                 <div className="form-group">
                     <label className="keyName" htmlFor="buildYear">Baujahr</label>
-                    <input className="submit-react-autosuggest__input" type="date" name="buildYear"
+                    <input className="submit-react-autosuggest__input" type="text" name="buildYear"
                         value={this.state.buildYear}
                         onChange={this.handleUserInput} />
                 </div>

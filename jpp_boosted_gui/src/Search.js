@@ -20,6 +20,7 @@ async function getProjectSuggestions(value) {
 class Search extends React.Component {
     constructor(props) {
         super(props);
+        this.mounted = true;
         this.state = { 
             searchTerm: this.props.searchTerm !== undefined ? this.props.searchTerm : "",
             projectsList: [],
@@ -37,10 +38,14 @@ class Search extends React.Component {
 
     submitValue(e, value) {
         e.preventDefault();
+        this.mounted = false;
         this.props.onSubmit(value);
     }
 
     onSearchChange = (event, value) => {
+        if(this.mounted === false) {
+            return;
+        }
         this.setState({ selectedProject: this.state.projectsList.find(m => m.title === value.newValue), searchTerm: value.newValue });
         getProjectSuggestions(value.newValue).then(projs => this.setState({ projectsList: projs }));
     }
@@ -57,7 +62,6 @@ class Search extends React.Component {
                             }}
                             onSuggestionsClearRequested={() => this.setState({ projectsList: [] })}
                             onSuggestionSelected={(event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) => {
-                                console.log(suggestionValue);
                                 this.setState({selected: suggestion, searchTerm: suggestionValue});
                                 this.submitValue(event, suggestionValue);
                             }}

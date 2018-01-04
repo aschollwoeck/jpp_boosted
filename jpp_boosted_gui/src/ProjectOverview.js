@@ -1,82 +1,11 @@
 import React from 'react';
-import moment, { max } from 'moment';
+import moment from 'moment';
 
 import './ProjectOverview.css';
 import c63amg from './c63_amg.jpg';
+import { Link } from 'react-router-dom';
 
 class ProjectOverview extends React.Component {
-
-    // {
-    //     id: 1,
-    //     title: "C63 AMG Tuning",
-    //     modificationStart: 2016,
-    //     modificationEnd: 2016,
-    //     rating: 4.5,
-    //     baseModel: {
-    //       id: 1,
-    //       manufacturer: "Mercedes-Benz",
-    //       manufacturerUrl: "",
-    //       model: "C63 AMG",
-    //       manufactureDate: 2016,
-    //       bodyType: "Hatchback",
-    //       aspiration: "Turbo",
-    //       transmission: "Manual",
-    //       doors: 3,
-    //       seats: 4,
-    //       weigth: 1700,
-    //       height: 200,
-    //       width: 200,
-    //       length: 473,
-    //       drive: "rear-wheel",
-    //       engine: {
-    //         id: 1,
-    //         vMax: 270,
-    //         capacity: 3400,
-    //         fuel: "petrol",
-    //         cylinder: 8,
-    //         buildTimeStart: 1999,
-    //         buildTimeEnd: 2000,
-    //       },
-    //       tankCapacity: 63,
-    //       wheelbase: 2735,
-    //       maxWeight: 1785,
-    //       emptyWeight: 0,
-    //     },
-    //     tuning: [
-    //       {
-    //         id: 1,
-    //         stage: "Serie",
-    //         description: "Herstellerangaben",
-    //         horsePower: 563,
-    //         powerWheels: 258,
-    //         torque: 634,
-    //         modificationDate: 2016,
-    //         modifiedParts: [
-    // {
-    //     id: 1,
-    //     part: "Krümmer",
-    //     youtubeUrl: "",
-    //     manufacturer: "Hersteller",
-    //     manufacturerUrl: "",
-    //     partUrl: ""
-    //   }
-    //         ],
-    //         measuredTime: [
-    //           {
-    //             id: 1,
-    //             speedRange: "0-200",
-    //             time: "10.3",
-    //             youtubeUrl: ""
-    //           },
-    //           {
-    //             id: 2,
-    //             speedRange: "0-100",
-    //             time: "4.2",
-    //             youtubeUrl: ""
-    //           }
-    //         ]
-    //       },
-
     getCarImage() {
         var imgUrl = this.props.project.baseModel.imageUrl;
         if (imgUrl !== "") {
@@ -92,23 +21,36 @@ class ProjectOverview extends React.Component {
         var stages = "";
         if (this.props.project.tunings != null) {
             stages = this.props.project.tunings.map(t => {
+                const ps = t.horsePower !== 0 ? <div className="ml-3">PS: {t.horsePower}</div> : ""
+                const nm = t.torque !== 0 ? <div className="ml-2">NM: {t.torque}</div> : ""
                 const power = <div className="mt-1">
-                                <div className="row">
-                                    <div className="ml-3">PS: {t.horsePower}</div>
-                                    <div className="ml-2">NM: {t.torque}</div>
-                                </div>
-                                <div>Date: {moment(t.date).format("MMM. YY")}</div>
-                            </div>
-                const times = t.times.map(m => {
-                    return (
-                        <div key={m.id}><span className="speedRangeKey">{m.speedRange}</span>: {m.time} Sekunden</div>
-                    );
-                });
-                const modParts = t.parts.map(p => {
-                    return (
-                        <div key={p.id}>{p.name} (<a href={getExternalLink(p.manufacturerUrl)}>{p.manufacturer}</a>)</div>
-                    );
-                });
+                    <div className="row">
+                        {ps}
+                        {nm}
+                    </div>
+                    <div>Date: {moment(t.date).format("MMM. YY")}</div>
+                </div>
+                var times = "";
+                if (t.times !== null && t.times.length > 0) {
+                    times = t.times.map(m => {
+                        return (
+                            <div key={m.id}><span className="speedRangeKey">{m.speedRange}</span>: {m.time} Sekunden</div>
+                        );
+                    });
+                    
+                    times = <div><div><strong>Gemessene Zeiten (km/h)</strong></div>{times}</div>
+                }
+                var modParts = "";
+                if (t.parts !== null && t.parts.length > 0) {
+                    modParts = t.parts.map(p => {
+                        const partName = p.url === "" ? p.name : <a target="blank" href={getExternalLink(p.url)}>{p.name}</a>
+                        const manName = p.manufacturerUrl === "" ? p.manufacturer : <a target="blank" href={getExternalLink(p.manufacturerUrl)}>{p.manufacturer}</a>
+                        return (
+                            <div key={p.id}>{partName} ({manName})</div>
+                        );
+                    });
+                    modParts = <div><div><strong>Verbaute Teile</strong></div>{modParts}</div>
+                }
                 var ytEmbedded = "";
                 if (t.youtubeUrl !== "" && t.youtubeUrl !== undefined) {
                     var match = new RegExp("v=([0-9a-zA-Z_]+)", "i").exec(t.youtubeUrl);
@@ -128,15 +70,9 @@ class ProjectOverview extends React.Component {
                                 {power}
                             </div>
                             <div className="mt-2">
-                                <div>
-                                    <strong>Gemessene Zeiten (km/h)</strong>
-                                </div>
                                 {times}
                             </div>
                             <div className="mt-2">
-                                <div>
-                                    <strong>Verbaute Teile</strong>
-                                </div>
                                 {modParts}
                             </div>
                         </div>
@@ -149,11 +85,11 @@ class ProjectOverview extends React.Component {
         }
 
         var modTimespan = "";
-        if(this.props.project.tunings) {
+        if (this.props.project.tunings !== null && this.props.project.tunings.length > 0) {
             var dates = this.props.project.tunings.map(t => new Date(t.date));
-            var maxDate=new Date(Math.max.apply(null,dates));
-            var minDate=new Date(Math.min.apply(null,dates));
-            if(moment(maxDate).format("MMM. YY") === moment(minDate).format("MMM. YY")) {
+            var maxDate = new Date(Math.max.apply(null, dates));
+            var minDate = new Date(Math.min.apply(null, dates));
+            if (moment(maxDate).format("MMM. YY") === moment(minDate).format("MMM. YY")) {
                 modTimespan = moment(minDate).format("MMM. YY")
             } else {
                 modTimespan = moment(minDate).format("MMM. YY") + " - " + moment(maxDate).format("MMM. YY")
@@ -161,12 +97,20 @@ class ProjectOverview extends React.Component {
         }
 
         const imgUrl = this.getCarImage();
-        
+
+        var editButton = "";
+        if (this.props.project !== null) {
+            editButton = (
+                <Link  className="jpp-link-edit btn btn-primary" to={"/submit/" + this.props.project.id}>Bearbeiten</Link>
+            );
+        }
+
         return (
             <div className="jpp-search-result col-12">
                 <div className="">
                     <div className="jpp-search-result-header">
                         <strong>{this.props.project.title}</strong>
+                        {editButton}
                     </div>
                     <hr />
                     <div className="jpp-search-result-overview">

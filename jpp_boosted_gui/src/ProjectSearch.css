@@ -1,0 +1,28 @@
+.jpp-placeholder {
+    border: 1px solid #E0E0E0;
+    padding: 10px 10px;
+    margin-bottom: 20px;
+}
+
+.media-block {
+    height: 115px;
+}
+
+.round-shape {
+    height: 50px;
+}
+
+.text-block {
+    margin-top: 10px;
+}
+
+.round-shape, .text-row {
+  animation: react-placeholder-pulse 1.5s infinite; }
+
+@keyframes react-placeholder-pulse {
+  0% {
+    opacity: .5; }
+  50% {
+    opacity: 1; }
+  100% {
+    opacity: .5; } }

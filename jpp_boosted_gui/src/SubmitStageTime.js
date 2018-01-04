@@ -5,16 +5,16 @@ class SubmitStageTime extends React.Component {
         super(props);
         this.state = {
             index: this.props.index,
-            measuredTime: this.props.measuredTime,
+            time: this.props.time,
         }
     }
 
     handleUserInput = (e) => {
-        const measuredTime = this.state.measuredTime;
-        measuredTime[e.target.name] = e.target.value;
+        const time = this.state.time;
+        time[e.target.name] = e.target.value;
 
-        this.setState({ measuredTime: measuredTime });
-        this.props.onChange(this.props.index, this.state.measuredTime);
+        this.setState({ time: time });
+        this.props.onChange(this.props.index, this.state.time);
     }
 
     render() {
@@ -24,13 +24,13 @@ class SubmitStageTime extends React.Component {
                     <div>
                         <label className="keyName" htmlFor="speedRange">KM/H</label>
                         <input type="text" name="speedRange" placeholder="0-100" 
-                            value={this.state.measuredTime.speedRange}
+                            value={this.state.time.speedRange}
                             onChange={this.handleUserInput} />
                     </div>
                     <div>
                         <label className="keyName" htmlFor="time">Zeit (Sek.)</label>
                         <input type="text" name="time" placeholder="3.8" 
-                            value={this.state.measuredTime.time}
+                            value={this.state.time.time}
                             onChange={this.handleUserInput} />
                     </div>
                 </div>
@@ -38,7 +38,7 @@ class SubmitStageTime extends React.Component {
                     <div>
                         <label className="keyName" htmlFor="youtubeUrl">YouTube</label>
                         <input type="text" name="youtubeUrl" placeholder="youtube.com/watch?v=v1kFDOnueug" 
-                            value={this.state.measuredTime.youtubeUrl}
+                            value={this.state.time.youtubeUrl}
                             onChange={this.handleUserInput} />
                     </div>
                 </div>

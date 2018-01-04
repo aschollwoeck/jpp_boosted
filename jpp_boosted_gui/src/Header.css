@@ -21,6 +21,16 @@
   height:auto;
   max-width: 200px;
 }
+@media screen and (max-width: 370px) {
+    .logo {
+        max-width: 185px;
+      }
+}
+@media screen and (max-width: 320px) {
+    .logo {
+        max-width: 140px;
+      }
+}
 
 .boost-logo {
     height: 35px;
