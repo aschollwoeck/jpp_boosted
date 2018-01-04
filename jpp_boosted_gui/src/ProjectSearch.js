@@ -21,8 +21,8 @@ class ProjectSearch extends React.Component {
             fetch("/api/projects/include?search=" + this.props.match.params.term)
                 .then(resp => resp.json())
                 .then(data => {
-                    setTimeout(() => this.setState({ projects: data, loading: false }), 8000);
-                    // this.setState({ projects: data, loading: false });
+                    // setTimeout(() => this.setState({ projects: data, loading: false }), 8000);
+                    this.setState({ projects: data, loading: false });
                 })
                 .catch(e => console.log(e));
         }
