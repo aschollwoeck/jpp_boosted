@@ -1,4 +1,3 @@
-
 @media screen and (min-width: 775px) {
     .form-group {
         display: flex;
@@ -24,4 +23,9 @@
     border: 1px solid #aaa;
     border-radius: 4px;
     -webkit-appearance: none;
-  }
+}
+
+.react-autosuggest__suggestions-container--open {
+    max-height: 200px;
+    overflow-y: auto;
+}

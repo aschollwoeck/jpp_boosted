@@ -20,7 +20,7 @@ class ProjectOverview extends React.Component {
     render() {
         var stages = "";
         if (this.props.project.tunings != null) {
-            stages = this.props.project.tunings.map(t => {
+                stages = this.props.project.tunings.sort(t => t.date).map(t => {
                 const ps = t.horsePower !== 0 ? <div className="ml-3">PS: {t.horsePower}</div> : ""
                 const nm = t.torque !== 0 ? <div className="ml-2">NM: {t.torque}</div> : ""
                 const power = <div className="mt-1">
