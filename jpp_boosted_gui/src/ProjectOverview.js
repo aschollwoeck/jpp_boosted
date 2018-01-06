@@ -5,6 +5,14 @@ import './ProjectOverview.css';
 import c63amg from './c63_amg.jpg';
 import { Link } from 'react-router-dom';
 
+function IsMobile() {
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
+        return true;
+    }
+
+    return false;
+}
+
 class ProjectOverview extends React.Component {
     getCarImage() {
         var imgUrl = this.props.project.baseModel.imageUrl;
@@ -53,11 +61,16 @@ class ProjectOverview extends React.Component {
                 }
                 var ytEmbedded = "";
                 if (t.youtubeUrl !== "" && t.youtubeUrl !== undefined) {
+                    if(IsMobile() === true) {
+                        ytEmbedded = <a target="blank" href={t.youtubeUrl}>YouTube-Video</a>
+                    }
+                    else {
                     var match = new RegExp("v=([0-9a-zA-Z_]+)", "i").exec(t.youtubeUrl);
                     if (match !== null) {
                         const ytLink = "https://www.youtube.com/embed/" + match[1]
                         ytEmbedded = <iframe title={t.id + match[1]} width="100%" src={ytLink} frameBorder="0" gesture="media" allow="encrypted-media" allowFullScreen></iframe>
                     }
+                }
                 }
                 return (
                     <div key={t.id} className="jpp-search-result-stage">
