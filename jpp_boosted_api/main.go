@@ -590,6 +590,7 @@ func GetProjectInclude(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
+
 	json.NewEncoder(w).Encode(projects.Projects[0])
 }
 
@@ -677,7 +678,7 @@ func PostProject(w http.ResponseWriter, r *http.Request) {
 		res, err := InsertProject(&proj)
 		checkErr(err)
 
-		id, err := res.LastInsertId()
+		id, err = res.LastInsertId()
 		log.Println("Created with ID ", id)
 	}
 

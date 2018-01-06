@@ -158,7 +158,7 @@ class Submit extends React.Component {
             })
         };
 
-        // console.log(JSON.stringify(project));
+        console.log(JSON.stringify(project));
 
         fetch("/api/projects", {
             method: "POST",
@@ -177,7 +177,10 @@ class Submit extends React.Component {
         if (this.state.tuning.length > 0) {
             stages = this.state.tuning.map((t, i) => {
                 return (
-                    <SubmitStage key={"tuning" + i} index={i} tuning={t} onChange={this.tuningChanged} />
+                    <div>
+                        <hr />
+                        <SubmitStage key={"tuning" + i} index={i} tuning={t} onChange={this.tuningChanged} />
+                    </div>
                 );
             });
         }
@@ -188,7 +191,6 @@ class Submit extends React.Component {
                 <button className="btn btn-primary" onClick={this.addStage}>
                     + Umbau hinzufügen
                 </button>
-                <hr />
                 {stages}
                 <hr />
                 <button type="submit" className="btn btn-primary" onClick={this.postNewProject}>
