@@ -20,34 +20,25 @@ async function getProjectSuggestions(value) {
 class Search extends React.Component {
     constructor(props) {
         super(props);
-        this.mounted = true;
         this.state = { 
             searchTerm: this.props.searchTerm !== undefined ? this.props.searchTerm : "",
             projectsList: [],
             selected: undefined,
          };
-
-        // this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
-        this.submit = this.submit.bind(this);
     }
 
-    submit(e) {
+    submit = (e) => {
         e.preventDefault();
         this.props.onSubmit(this.state.searchTerm);
     }
 
     submitValue(e, value) {
         e.preventDefault();
-        this.mounted = false;
         this.props.onSubmit(value);
     }
 
     onSearchChange = (event, value) => {
-        if(this.mounted === false) {
-            return;
-        }
         this.setState({ selectedProject: this.state.projectsList.find(m => m.title === value.newValue), searchTerm: value.newValue });
-        getProjectSuggestions(value.newValue).then(projs => this.setState({ projectsList: projs }));
     }
 
     render() {
