@@ -298,8 +298,8 @@ func QueryProjectsInclude(r *http.Request) (*sql.Rows, error) {
 				c.id as carmodelid, c.buildSeries, c.imageUrl, c.name, c.seriescode, c.buildstart, c.buildend, c.seriesbuildstart, c.seriesbuildend, c.type, c.Cylinder, c.KW, c.PS, c.Torque, c.Tare, c.Wheelsize, c.Acceleration, c.VMax, 
 				m.name, m.url,
 				t.id as tuningid, t.stage, t.description, t.horsepower, t.torque, t.date, t.youtubeurl, 
-				ti.id as timeid, ti.speedRange, ti.time, 
-				part.id as partid, part.Name, part.Url, part.Manufacturer, part.ManufacturerUrl
+				coalesce(ti.id, 0) as timeid, coalesce(ti.speedRange, "") as speedRange, coalesce(ti.time, 0) as time, 
+				coalesce(part.id, 0) as partid, coalesce(part.Name, "") as Name, coalesce(part.Url, "") as Url, coalesce(part.Manufacturer, "") as Manufacturer, coalesce(part.ManufacturerUrl, "") as ManufacturerUrl
 				from Project p
 				left join CarModel c on c.id = p.carmodelid
 				left join CarManufacturer m on m.id = c.manufacturerid
@@ -321,8 +321,8 @@ func QueryProjectsInclude(r *http.Request) (*sql.Rows, error) {
 				c.id as carmodelid, c.buildSeries, c.imageUrl, c.name, c.seriescode, c.buildstart, c.buildend, c.seriesbuildstart, c.seriesbuildend, c.type, c.Cylinder, c.KW, c.PS, c.Torque, c.Tare, c.Wheelsize, c.Acceleration, c.VMax, 
 				m.name, m.url,
 				t.id as tuningid, t.stage, t.description, t.horsepower, t.torque, t.date, t.youtubeurl, 
-				ti.id as timeid, ti.speedRange, ti.time, 
-				part.id as partid, part.Name, part.Url, part.Manufacturer, part.ManufacturerUrl
+				coalesce(ti.id, 0) as timeid, coalesce(ti.speedRange, "") as speedRange, coalesce(ti.time, 0) as time, 
+				coalesce(part.id, 0) as partid, coalesce(part.Name, "") as Name, coalesce(part.Url, "") as Url, coalesce(part.Manufacturer, "") as Manufacturer, coalesce(part.ManufacturerUrl, "") as ManufacturerUrl
 				from Project p
 				left join CarModel c on c.id = p.carmodelid
 				left join CarManufacturer m on m.id = c.manufacturerid
@@ -455,6 +455,9 @@ func GetProjectsInclude(w http.ResponseWriter, r *http.Request) {
 			&tuningTime.ID, &tuningTime.SpeedRange, &tuningTime.Time,
 			&tuningPart.ID, &tuningPart.Name, &tuningPart.URL, &tuningPart.Manufacturer, &tuningPart.ManufacturerURL)
 
+		log.Println("TuningPart")
+		log.Println(tuningPart)
+
 		if tuningPart.ID > 0 {
 			tuning.Parts = append(tuning.Parts, tuningPart)
 		}
@@ -496,15 +499,19 @@ func GetProjectsInclude(w http.ResponseWriter, r *http.Request) {
 
 		// Tuning existiert ebenfalls schon, also machen wir mit
 		// den Parts weiter
-		tempPart := projects.Projects[tempProjIndex].Tunings[tempTuningIndex].GetPart(tuningPart.ID)
-		if tempPart == nil {
-			projects.Projects[tempProjIndex].Tunings[tempTuningIndex].AddPart(tuningPart)
+		if tuningPart.ID > 0 {
+			tempPart := projects.Projects[tempProjIndex].Tunings[tempTuningIndex].GetPart(tuningPart.ID)
+			if tempPart == nil {
+				projects.Projects[tempProjIndex].Tunings[tempTuningIndex].AddPart(tuningPart)
+			}
 		}
 
-		// Und jetzt noch für Times
-		tempTime := projects.Projects[tempProjIndex].Tunings[tempTuningIndex].GetTime(tuningTime.ID)
-		if tempTime == nil {
-			projects.Projects[tempProjIndex].Tunings[tempTuningIndex].AddTime(tuningTime)
+		if tuningTime.ID > 0 {
+			// Und jetzt noch für Times
+			tempTime := projects.Projects[tempProjIndex].Tunings[tempTuningIndex].GetTime(tuningTime.ID)
+			if tempTime == nil {
+				projects.Projects[tempProjIndex].Tunings[tempTuningIndex].AddTime(tuningTime)
+			}
 		}
 	}
 
@@ -698,7 +705,10 @@ func PostProject(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, part := range tun.Parts {
-			log.Println(part)
+			// Wir fügen nur Parts ein, die nicht leer sind
+			if part.Name == "" && part.URL == "" && part.Manufacturer == "" && part.ManufacturerURL == "" {
+				continue
+			}
 			part.TuningID = tunID
 			if part.ID > 0 {
 				_, err := UpdatePart(&part)
@@ -710,6 +720,10 @@ func PostProject(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, time := range tun.Times {
+			// Wir fügen nur Zeiten ein, die nicht leer sind
+			if time.SpeedRange == "" {
+				continue
+			}
 			log.Println(time)
 			time.TuningID = tunID
 			if time.ID > 0 {
