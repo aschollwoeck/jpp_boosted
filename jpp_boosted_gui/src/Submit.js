@@ -100,18 +100,35 @@ class Submit extends React.Component {
         this.setState({ tuning: tunings });
     }
 
-    onModelChange = (event, value) => {
-        const model = this.state.possibleModels.find(m => m.buildSeries === value.newValue);
-        this.setState({ selectedModel: model, modelValue: value.newValue });
+    onModelSelected = (value) => {
+        const model = value;
+        this.setState({ selectedModel: model });
         if (this.state.tuning.length === 0 && model !== undefined) {
             var t = this.getNewTuning();
             t.stage = "Werksangabe";
             t.torque = model.torque;
             t.horsePower = model.ps;
             t.times = [{ speedRange: "0-100", time: model.acceleration }];
-            console.log(t);
             this.setState({ tuning: [t] });
         }
+        // const model = this.state.possibleModels.find(m => m.buildSeries === value.newValue);
+        // this.setState({ selectedModel: model, modelValue: value.newValue });
+        // if (this.state.tuning.length === 0 && model !== undefined) {
+        //     var t = this.getNewTuning();
+        //     t.stage = "Werksangabe";
+        //     t.torque = model.torque;
+        //     t.horsePower = model.ps;
+        //     t.times = [{ speedRange: "0-100", time: model.acceleration }];
+        //     console.log(t);
+        //     this.setState({ tuning: [t] });
+        // }
+
+        // getManuModelsSuggestions(this.state.selectedManufacturer, value.newValue).then(models => this.setState({ possibleModels: models }));
+    }
+
+    onModelChange = (event, value) => {
+        // const model = this.state.possibleModels.find(m => m.buildSeries === value.newValue);
+        this.setState({ selectedModel: undefined, modelValue: value.newValue });
 
         getManuModelsSuggestions(this.state.selectedManufacturer, value.newValue).then(models => this.setState({ possibleModels: models }));
     }
@@ -177,7 +194,7 @@ class Submit extends React.Component {
         if (this.state.tuning.length > 0) {
             stages = this.state.tuning.map((t, i) => {
                 return (
-                    <div>
+                    <div key={"divTuning" + i}>
                         <hr />
                         <SubmitStage key={"tuning" + i} index={i} tuning={t} onChange={this.tuningChanged} />
                     </div>
@@ -267,6 +284,9 @@ class Submit extends React.Component {
                                 <div>
                                     {item.name} {item.type} ({item.seriesCode} - {item.buildStart} - {item.buildEnd})
                                 </div>)}
+                            onSuggestionSelected={(event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) => {
+                                this.onModelSelected(suggestion);
+                                }}
                             inputProps={{
                                 placeholder: 'M3',
                                 value: this.state.modelValue,
