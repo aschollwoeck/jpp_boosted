@@ -298,8 +298,8 @@ func QueryProjectsInclude(r *http.Request) (*sql.Rows, error) {
 				c.id as carmodelid, c.buildSeries, c.imageUrl, c.name, c.seriescode, c.buildstart, c.buildend, c.seriesbuildstart, c.seriesbuildend, c.type, c.Cylinder, c.KW, c.PS, c.Torque, c.Tare, c.Wheelsize, c.Acceleration, c.VMax, 
 				m.name, m.url,
 				t.id as tuningid, t.stage, t.description, t.horsepower, t.torque, t.date, t.youtubeurl, 
-				coalesce(ti.id, 0) as timeid, ti.speedRange, ti.time, 
-				coalesce(part.id, 0) as partid, part.Name, part.Url, part.Manufacturer, part.ManufacturerUrl
+				coalesce(ti.id, 0) as timeid, coalesce(ti.speedRange, "") as speedRange, coalesce(ti.time, 0) as time, 
+				coalesce(part.id, 0) as partid, coalesce(part.Name, "") as Name, coalesce(part.Url, "") as Url, coalesce(part.Manufacturer, "") as Manufacturer, coalesce(part.ManufacturerUrl, "") as ManufacturerUrl
 				from Project p
 				left join CarModel c on c.id = p.carmodelid
 				left join CarManufacturer m on m.id = c.manufacturerid
@@ -321,8 +321,8 @@ func QueryProjectsInclude(r *http.Request) (*sql.Rows, error) {
 				c.id as carmodelid, c.buildSeries, c.imageUrl, c.name, c.seriescode, c.buildstart, c.buildend, c.seriesbuildstart, c.seriesbuildend, c.type, c.Cylinder, c.KW, c.PS, c.Torque, c.Tare, c.Wheelsize, c.Acceleration, c.VMax, 
 				m.name, m.url,
 				t.id as tuningid, t.stage, t.description, t.horsepower, t.torque, t.date, t.youtubeurl, 
-				coalesce(ti.id, 0) as timeid, ti.speedRange, ti.time, 
-				coalesce(part.id, 0) as partid, part.Name, part.Url, part.Manufacturer, part.ManufacturerUrl
+				coalesce(ti.id, 0) as timeid, coalesce(ti.speedRange, "") as speedRange, coalesce(ti.time, 0) as time, 
+				coalesce(part.id, 0) as partid, coalesce(part.Name, "") as Name, coalesce(part.Url, "") as Url, coalesce(part.Manufacturer, "") as Manufacturer, coalesce(part.ManufacturerUrl, "") as ManufacturerUrl
 				from Project p
 				left join CarModel c on c.id = p.carmodelid
 				left join CarManufacturer m on m.id = c.manufacturerid
