@@ -46,7 +46,11 @@ class ProjectOverview extends React.Component {
                 </div>
                 var times = "";
                 if (t.times !== null && t.times.length > 0) {
-                    times = t.times.map(m => {
+                    times = t.times.sort((a, b) => {
+                        if(a.speedRange < b.speedRange) return -1;
+                        if(a.speedRange > b.speedRange) return 1;
+                        return 0;
+                    }).map(m => {
                         return (
                             <div key={m.id}><span className="speedRangeKey">{m.speedRange}</span>: {m.time} Sekunden</div>
                         );
