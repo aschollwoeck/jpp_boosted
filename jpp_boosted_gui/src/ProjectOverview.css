@@ -7,6 +7,7 @@
 
 .jpp-search-result-header {
     padding-top: 10px;
+    font-size: 1.2rem;
 }
 
 .jpp-image {
@@ -16,7 +17,7 @@
     max-height: 100px;
 }
 
-@media screen and (min-width: 370px) {
+@media screen and (min-width: 415px) {
     .jpp-search-result-overview {
         display: flex;
     }
@@ -47,16 +48,25 @@
     margin-top: 10px;
     border-top: 1px solid #42404033;
 }
-@media screen and (min-width: 700px) {
+
+.jpp-search-result-stage-name {
+    font-size: 1.2rem;
+}
+
+@media screen and (min-width: 800px) {
     .jpp-search-result-stage {
         display: flex;
     }
-}
+
 
 .jpp-search-result-stage-name {
-    min-width: 125px;
+    /* min-width: 125px; */
+    width: 160px;
+    font-size: 1rem;
 }
 
 .jpp-search-result-stage-content {
-    min-width: 250px;
+    /* min-width: 250px; */
+    width: 300px;
+}
 }

@@ -29,7 +29,12 @@ class ProjectOverview extends React.Component {
     render() {
         var stages = "";
         if (this.props.project.tunings != null) {
-                stages = this.props.project.tunings.sort(t => t.date).map(t => {
+            // stages = this.props.project.tunings.sort(t => t.date).map(t => {
+            stages = this.props.project.tunings.sort((a, b) => {
+                let bD = new Date(b.date).getTime();
+                let aD = new Date(a.date).getTime();
+                return aD - bD;
+            }).map(t => {
                 const ps = t.horsePower !== 0 ? <div className="ml-3">PS: {t.horsePower}</div> : ""
                 const nm = t.torque !== 0 ? <div className="ml-2">NM: {t.torque}</div> : ""
                 const power = <div className="mt-1">
@@ -37,7 +42,7 @@ class ProjectOverview extends React.Component {
                         {ps}
                         {nm}
                     </div>
-                    <div>Date: {moment(t.date).format("MMM. YY")}</div>
+                    <div>Datum: {moment(t.date).format("MMM. YY")}</div>
                 </div>
                 var times = "";
                 if (t.times !== null && t.times.length > 0) {
@@ -46,7 +51,7 @@ class ProjectOverview extends React.Component {
                             <div key={m.id}><span className="speedRangeKey">{m.speedRange}</span>: {m.time} Sekunden</div>
                         );
                     });
-                    
+
                     times = <div><div><strong>Gemessene Zeiten (km/h)</strong></div>{times}</div>
                 }
                 var modParts = "";
@@ -62,16 +67,16 @@ class ProjectOverview extends React.Component {
                 }
                 var ytEmbedded = "";
                 if (t.youtubeUrl !== "" && t.youtubeUrl !== undefined) {
-                    if(IsMobile() === true) {
+                    if (IsMobile() === true) {
                         ytEmbedded = <a target="blank" href={t.youtubeUrl}>YouTube-Video</a>
                     }
                     else {
-                    var match = new RegExp("v=([0-9a-zA-Z_\-]+)", "i").exec(t.youtubeUrl);
-                    if (match !== null) {
-                        const ytLink = "https://www.youtube.com/embed/" + match[1]
-                        ytEmbedded = <iframe title={t.id + match[1]} width="100%" src={ytLink} frameBorder="0" gesture="media" allow="encrypted-media" allowFullScreen></iframe>
+                        var match = new RegExp("v=([0-9a-zA-Z_\-]+)", "i").exec(t.youtubeUrl);
+                        if (match !== null) {
+                            const ytLink = "https://www.youtube.com/embed/" + match[1]
+                            ytEmbedded = <iframe title={t.id + match[1]} width="100%" src={ytLink} frameBorder="0" gesture="media" allow="encrypted-media" allowFullScreen></iframe>
+                        }
                     }
-                }
                 }
                 return (
                     <div key={t.id} className="jpp-search-result-stage">
@@ -115,7 +120,7 @@ class ProjectOverview extends React.Component {
         var editButton = "";
         if (this.props.project !== null) {
             editButton = (
-                <Link  className="jpp-link-edit btn btn-primary" to={"/submit/" + this.props.project.id}>Bearbeiten</Link>
+                <Link className="jpp-link-edit btn btn-primary" to={"/submit/" + this.props.project.id}>Bearbeiten</Link>
             );
         }
 
@@ -135,7 +140,7 @@ class ProjectOverview extends React.Component {
                             <div>Model: {this.props.project.baseModel.name} ({this.props.project.baseModel.seriesCode})</div>
                             <div>Hersteller: {this.props.project.baseModel.manufacturer.name}</div>
                             <div>Baujahr: {this.props.project.buildYear}</div>
-                            <div>Bauzeit: {modTimespan}</div>
+                            <div>Zeitraum: {modTimespan}</div>
                         </div>
                     </div>
                     <div className="jpp-search-result-stages">
