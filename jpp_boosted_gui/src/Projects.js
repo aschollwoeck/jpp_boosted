@@ -5,7 +5,7 @@ import { MediaBlock, TextBlock } from 'react-placeholder/lib/placeholders';
 import 'react-placeholder/lib/reactPlaceholder.css';
 
 async function getProjects() {
-    var prom = await fetch("/api/projects")
+    var prom = await fetch("/api/projects/include")
         .then(resp => resp.json())
         .then(data => {
             return data;
