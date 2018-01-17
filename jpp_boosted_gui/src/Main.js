@@ -5,6 +5,7 @@ import Privacy from './Privacy';
 import Submit from './Submit';
 import About from './About';
 import ProjectSearch from './ProjectSearch';
+import Projects from './Projects';
 
 class Main extends React.Component {
     render() {
@@ -18,6 +19,7 @@ class Main extends React.Component {
                 <Route path='/privacy' component={Privacy} />
                 <Route path='/about' component={About} />
                 <Route path='/datenschutz' component={Privacy} />
+                <Route path='/projects' component={Projects} />
             </Switch>
         );
     }
