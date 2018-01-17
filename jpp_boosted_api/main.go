@@ -314,7 +314,7 @@ func QueryProjectsInclude(r *http.Request) (*sql.Rows, error) {
 
 	params := mux.Vars(r)
 	i, _ := strconv.Atoi(params["id"])
-	if err == nil {
+	if err == nil && i > 0 {
 		return db.Query(`
 				select 
 				p.id as projectid, p.carmodelid, p.title, p.buildYear, p.imageUrl as projimgurl, 
@@ -335,6 +335,7 @@ func QueryProjectsInclude(r *http.Request) (*sql.Rows, error) {
 				`, i)
 	}
 
+	log.Println("Standard Query")
 	return db.Query(`
 		select 
 		p.id as projectid, p.carmodelid, p.title, p.buildYear, p.imageUrl as projimgurl, 
