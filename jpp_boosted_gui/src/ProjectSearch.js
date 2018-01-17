@@ -80,7 +80,7 @@ class ProjectSearch extends React.Component {
             if (this.state.projects !== null) {
                 projects = this.state.projects.map(p => {
                     return (
-                        <ProjectOverview key={"project" + p.id} project={p} />
+                        <ProjectOverview key={"project" + p.id} project={p} showTunings={true} />
                     );
                 });
             }

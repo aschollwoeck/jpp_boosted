@@ -28,7 +28,7 @@ class ProjectOverview extends React.Component {
 
     render() {
         var stages = "";
-        if (this.props.project.tunings != null) {
+        if (this.props.showTunings === true && this.props.project.tunings != null) {
             // stages = this.props.project.tunings.sort(t => t.date).map(t => {
             stages = this.props.project.tunings.sort((a, b) => {
                 let bD = new Date(b.date).getTime();
