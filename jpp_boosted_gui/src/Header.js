@@ -11,12 +11,14 @@ class Header extends React.Component {
                 <div className="header">
                     <div className="header-name">
                         <Link className="header-home-link" to="/">JPP-Boosted!</Link>
-                        <Link className="ml-2 header-link" to="/projects">Alle Projekte</Link>
                     </div>
                     <div className="header-logo">
                         <a target="blank" href="https://jp-performance.de">
                             <img className="logo" src={logo} alt="logo" />
                         </a>
+                    </div>
+                    <div className="header-name">
+                        <Link className="ml-2 header-link" to="/projects">Alle Projekte</Link>
                     </div>
                 </div>
             </header>

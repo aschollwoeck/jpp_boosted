@@ -9,6 +9,12 @@
     clear: both;
     font-size: 12px;
 }
+@media screen and (max-width: 500px) {
+    .jpp-footer {
+        margin-top: -130px;
+        min-height: 130px;
+    }
+}
 
 .footerLinks {
     list-style: none;
