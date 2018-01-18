@@ -273,13 +273,18 @@ func QueryProjects(r *http.Request) (*sql.Rows, error) {
 	checkErr(err)
 	defer db.Close()
 
+	limit := r.URL.Query().Get("limit")
+	if limit != "" {
+		limit = " LIMIT " + limit
+	}
+
 	title := r.URL.Query().Get("title")
 	if title != "" {
 		title := "%" + title + "%"
-		return db.Query("SELECT DISTINCT ID, CarModelID, Title, BuildYear, ImageUrl FROM Project WHERE title like ? ORDER BY Title ASC", title)
+		return db.Query("SELECT DISTINCT ID, CarModelID, Title, BuildYear, ImageUrl FROM Project WHERE title like ? ORDER BY Title ASC"+limit, title)
 	}
 
-	return db.Query("SELECT ID, CarModelID, Title, BuildYear, ImageUrl FROM Project ORDER BY Title ASC")
+	return db.Query("SELECT ID, CarModelID, Title, BuildYear, ImageUrl FROM Project ORDER BY Title ASC" + limit)
 }
 
 // QueryProjectsInclude übernimmt die Suche in der Datenbank

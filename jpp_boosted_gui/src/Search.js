@@ -4,13 +4,21 @@ import Autosuggest from 'react-autosuggest';
 import './Search.css';
 
 async function getProjectSuggestions(value) {
-    if (value === undefined || value.value === undefined)
-        return [];
+    var prom;
+    if (value === "") {
+        prom = await fetch("/api/projects?limit=10")
+            .then(r => r.json())
+            .then(json => json)
+            .catch(e => console.log(e));
+    } else {
+        if (value === undefined || value.value === undefined)
+            return [];
 
-    var prom = await fetch("/api/projects?title=" + value.value)
-        .then(r => r.json())
-        .then(json => json)
-        .catch(e => console.log(e));
+        prom = await fetch("/api/projects?title=" + value.value)
+            .then(r => r.json())
+            .then(json => json)
+            .catch(e => console.log(e));
+    }
 
     if (prom === null)
         return [];
@@ -25,6 +33,8 @@ class Search extends React.Component {
             projectsList: [],
             selected: undefined,
          };
+
+         getProjectSuggestions("").then(prjs => this.setState({ projectsList: prjs }));
     }
 
     submit = (e) => {
@@ -41,17 +51,36 @@ class Search extends React.Component {
         this.setState({ selectedProject: this.state.projectsList.find(m => m.title === value.newValue), searchTerm: value.newValue });
     }
 
+    renderSuggestions = () => {
+        return this.state.projectsList.length > 0 && (this.state.searchTerm === undefined || this.state.searchTerm === "");
+    }
+
+    onDeleteSearch = (e) => {
+        e.preventDefault();
+        this.setState({searchTerm: ""});
+    }
+
     render() {
+        var cancelButton = "";
+        if(this.state.searchTerm !== undefined && this.state.searchTerm !== "") {
+            cancelButton = <div className="input-group-btn">
+                                <button onClick={this.onDeleteSearch} className="btn">
+                                    <i className="fas fa-trash"></i>
+                                </button>
+                            </div>
+        }
+
         return (
             <div>
                 <form onSubmit={this.submit} id="search">
                     <div className="Search">
                         <Autosuggest
+                            alwaysRenderSuggestions={this.renderSuggestions()}
                             suggestions={this.state.projectsList}
                             onSuggestionsFetchRequested={(value) => {
                                 getProjectSuggestions(value).then(manus => this.setState({ projectsList: manus }));
                             }}
-                            onSuggestionsClearRequested={() => this.setState({ projectsList: [] })}
+                            onSuggestionsClearRequested={() => getProjectSuggestions("").then(prjs => this.setState({ projectsList: prjs }))}
                             onSuggestionSelected={(event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) => {
                                 this.setState({selected: suggestion, searchTerm: suggestionValue});
                                 this.submitValue(event, suggestionValue);
@@ -83,11 +112,12 @@ class Search extends React.Component {
                                 sectionTitle:             'react-autosuggest__section-title'
                             }}
                         />
-                        <span className="input-group-btn">
+                        {cancelButton}
+                        <div className="input-group-btn">
                             <button className="btn">
                                 <i className="fas fa-search"></i>
                             </button>
-                        </span>
+                        </div>
                         
                     </div>
                 </form>
