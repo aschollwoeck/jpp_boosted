@@ -51,9 +51,7 @@ class Search extends React.Component {
         this.setState({ selectedProject: this.state.projectsList.find(m => m.title === value.newValue), searchTerm: value.newValue });
     }
 
-    renderSuggestions = () => {
-        return this.state.projectsList.length > 0 && (this.state.searchTerm === undefined || this.state.searchTerm === "");
-    }
+
 
     onDeleteSearch = (e) => {
         e.preventDefault();
@@ -75,7 +73,7 @@ class Search extends React.Component {
                 <form onSubmit={this.submit} id="search">
                     <div className="Search">
                         <Autosuggest
-                            alwaysRenderSuggestions={this.renderSuggestions()}
+                            shouldRenderSuggestions={() => true}
                             suggestions={this.state.projectsList}
                             onSuggestionsFetchRequested={(value) => {
                                 getProjectSuggestions(value).then(manus => this.setState({ projectsList: manus }));
