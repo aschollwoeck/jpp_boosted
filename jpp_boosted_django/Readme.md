@@ -3,6 +3,11 @@ In case you have no virtual environment installed yet, you have to create one an
 ```
 python3 -m venv env
 ```
+Now you can install Django and Django REST framework into the virtual environment
+```
+pip install django
+pip install djangorestframework
+```
 
 Afterwards activate the environment so you can run e.g. python manage.py runserver command
 ```
