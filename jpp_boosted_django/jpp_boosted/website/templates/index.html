@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="jpp-content-center">
+        <h3>Modifizierte Kraftfahrzeuge der <a target="blank" href="https://www.jp-performance.de">JP Performance GmbH</a></h3>
+        <p>Projektautos, gemessene Zeiten und weitere Informationen zu Umbauten</p>
+        <form id="search" action="/projects/" method="GET" onsubmit="return q.value!=''">
+            <div class="Search">
+                <input name="q" type="search" value="" autocomplete="off" role="combobox" aria-autocomplete="list" aria-owns="react-autowhatever-1" aria-expanded="false" aria-haspopup="false" class="search-react-autosuggest__input" placeholder="Nick, Hersteller, Modell...">
+                <input type="submit" value="Search" />
+            </div>
+        </form>
+    </div>
+
+    <p><strong>Aktuelle Modifizierungen:</strong></p>
+    {% include "project_overview_list.html" with project_list=project_list only %}
+{% endblock %}

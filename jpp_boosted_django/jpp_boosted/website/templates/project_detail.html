@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load duration %}
+
+{% block styles %}
+    <style type="text/css">
+        .project-detail-key-value {
+            display: grid;
+            grid-template-columns: [col] 125px [col] auto;
+        }
+        .project-detail-key-value:nth-child(1) {
+            grid-column: col 1;
+        }
+        .project-detail-key-value:nth-child(2) {
+            grid-column: col 2;
+        }
+
+        .project-detail-basics {
+            margin-right: 25px;
+        }
+
+        @media screen and (max-width: 767px) { 
+            .project-detail-basics {
+                display: grid;
+                grid-template-rows: [row] auto [row] auto;
+                grid-row-gap: 10px;
+            }
+            .project-detail-basics-image {
+                grid-row: row 1;
+            }
+            .project-detail-basics-data {
+                grid-row: row 2;
+            }
+
+            .project-detail-state {
+                /* float: left; */
+                display: grid;
+                grid-template-rows: [row] auto [row] auto [row] auto;
+            }
+            .project-detail-state-title {
+                grid-row: row 1;
+            }
+            .project-detail-state-content {
+                grid-row: row 2;
+            }
+            .project-detail-state-youtube {
+                grid-row: row 3;
+            }
+        }
+
+        @media screen and (min-width: 768px) {
+            .project-detail-basics {
+                display: grid;
+                grid-template-columns: [col] 200px [col] auto;
+                grid-column-gap: 10px;
+            }
+            .project-detail-basics-image {
+                grid-column: col 1;
+            }
+            .project-detail-basics-data {
+                grid-column: col 2;
+            }
+
+            .project-detail-state {
+                display: grid;
+                grid-template-columns: [col] 125px [col] auto [col] auto;
+
+                margin-right: 50px;
+            }
+            .project-detail-state-title {
+                grid-column: col 1;
+            }
+            .project-detail-state-content {
+                grid-column: col 2;
+            }
+            .project-detail-state-youtube {
+                grid-column: col 3;
+            }
+        }
+
+        .project-detail-state {
+            border-top: 1px solid #cfcfcf;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+
+        .project-detail-section {
+            margin-top: 5px;
+        }
+    </style>
+{% endblock  %}
+
+{% block content %}
+    <h1>{{ project.title }}</h1>
+    <div class="project-detail-basics">
+        <div class="project-detail-basics-image">
+            <a href="/projects/{{ project.id }}">
+                <img width="100%" height="100%" src="{% static 'aventador.jpg' %}" alt={{project.title}} />
+            </a>
+        </div>
+        <div class="project-detail-basics-data">
+            <div class="project-detail-key-value">
+                <div>Hersteller</div>
+                <div><a href="{{ project.brand.url }}" target="_blank">{{ project.brand.name }}</a></div>
+                <div>Modell</div>
+                <div>{{ project.model }} ({{ project.code }})</div>
+                <div>Baujahr</div>
+                <div>{{ project.production_date }}</div>
+            </div>
+        </div>
+    </div>
+
+    {% for state in project.state_set.all %}
+        <div class="project-detail-state">
+            <div class="project-detail-state-title">
+                <strong>{{ state.title }}</strong>
+            </div>
+
+            <div class="project-detail-state-content">
+                {% if state.description %}
+                    <div class="project-detail-section">
+                        <div>
+                            {{ state.description }}
+                        </div>
+                    </div>
+                {% endif %}    
+                <div class="project-detail-section">
+                        <div class="project-detail-key-value">
+                            <div>Modifizierung</div>
+                            <div>{{ state.modified_at }}</div>
+                        </div>
+                    </div>
+
+                {% if state.dynomeasurement_set.all %}
+                    <div class="project-detail-section">
+                        <strong>Leistung</strong>
+                        {% for dyno in state.dynomeasurement_set.all %}
+                            <div class="project-detail-key-value">
+                                <div>PS</div>
+                                <div>{{ dyno.horse_power }}</div>
+                                <div>NM</div>
+                                <div>{{ dyno.newtonmeter }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if state.timeperformancemeasurement_set.all %}
+                    <div class="project-detail-section">
+                        <strong>Gemessene Zeiten (km/h)</strong>
+                        <div class="project-detail-key-value">
+                            {% for time in state.timeperformancemeasurement_set.all %}
+                                <div>{{ time.speed_start }}-{{ time.speed_end }}</div>
+                                <div>{{ time.duration | duration }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                
+                {% if state.parts.all %}
+                    <div class="project-detail-section">
+                        <strong>Verbaute Teile</strong>
+                        {% for part in state.parts.all %}
+                            <div>
+                                <a href="{{ part.url }}" target="_blank">{{ part.name }}</a>
+                                (<a href="{{ part.brand.url }}" target="_blank">{{ part.brand.name }}</a>)
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="project-detail-state-youtube">                    
+                {% for ytVideo in state.youtubevideo.all %}
+                    <iframe src="https://www.youtube-nocookie.com/embed/{{ ytVideo.get_watch_code }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

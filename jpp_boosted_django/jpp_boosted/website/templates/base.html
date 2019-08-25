@@ -1,0 +1,64 @@
+{% load static %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    
+    <link rel="manifest" href="/manifest.json">
+    <link rel="shortcut icon" href="{% static 'website/favicon.ico' %}">
+    <link href="{% static 'styles.css' %}" rel="stylesheet">
+
+    <title>JPP-Boosted! Modifzierte Kraftfahrzeuge der JP Performance GmbH</title>
+
+    {% block styles %}
+    {% endblock %}
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="header">
+                <div class="header-home">
+                    <a class="header-home-link" href="/">JPP-Boosted!</a>
+                </div>
+                <div class="header-links">
+                    <a href="/projects/">Projekte</a>
+                    <a href="/dynos/">Prüfstand</a>
+                    <a href="/times/">Zeiten</a>
+                    <a href="/tracktimes/">Rundenzeiten</a>
+                </div>
+                <div class="header-jpplogo">
+                    <a target="blank" href="https://jp-performance.de">
+                        <img class="logo" src="{% static 'jpperformance.png' %}" alt="logo">
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="jpp-content">
+            <div class="container">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </main>
+    <footer>
+        <div class="jpp-footer">
+            <div class="jpp-footer-links">
+                <ul class="footerLinks">
+                    <li><a href="/about">Über JPP-Boosted</a></li>
+                    {% comment %} <li class="bar">|</li>
+                    <li><a href="/submit">Beitragen</a></li> {% endcomment %}
+                    <li class="bar">|</li>
+                    <li><a href="/privacy">Datenschutz</a></li>
+                </ul>
+            </div>
+            <div class="jpp-footer-text">
+                <div>Wünsche, Anregungen, Ideen?</div>
+                <div>Schreib eine <a href="mailto:contact@jpp-boosted.de">Mail</a>!</div>
+            </div>
+            <div class="jpp-footer-copyright">©2019 jpp-boosted.de</div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block content %}
+<form id="search" action="{% block filter_form_action %}{% endblock %}" method="GET">
+        <div class="filter">
+            <div class="filter-header">
+                {% block filter_header %}
+                    <div class="Search"
+                        <strong>Projekte</strong>
+                        <input name="q" type="search" value="{% if filterData.query %}{{ filterData.query }}{% endif %}" autocomplete="off" role="combobox" aria-autocomplete="list" aria-owns="react-autowhatever-1" aria-expanded="false" aria-haspopup="false" class="search-react-autosuggest__input" placeholder="Nick, Hersteller, Modell...">
+                        <input type="submit" value="Suchen" />
+
+                        {% block filter_header_sort %}
+                            <strong>Sortieren</strong>
+                            <select name="order" onchange="this.form.submit()">
+                                {% block filter_header_sort_options %}
+                                    <option value="mod_desc" {% if filterData.order == 'mod_desc' %}selected{% endif %}>Letzte Mod. absteigend</optin>
+                                    <option value="mod_asc" {% if filterData.order == 'mod_asc' %}selected{% endif %}>Letzte Mod. aufsteigend</option>
+                                {% endblock %}
+                            </select>
+                        {% endblock %}
+                    </div>
+                {% endblock %}
+            </div>
+
+            <div class="filter-content">
+                {% block filter_content %}
+                    <div class="filter-content-group">
+                        <div>
+                            <strong>Hersteller</strong>
+                        </div>
+                        <div>
+                            <select name="brand" onchange="this.form.submit()">
+                                {% if filterData.brand %}
+                                    <option></option>
+                                {% else %}
+                                    <option selected></option>
+                                {% endif %}
+                                
+                                {% for brand in filterData.brands %}
+                                    <option {% if brand == filterData.brand %}selected{% endif %}>{{ brand }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-content-group">
+                        <div>
+                            <strong>Modell</strong>
+                        </div>
+                        <div>
+                            <select name="model" onchange="this.form.submit()">
+                                {% if filterData.model %}
+                                    <option></option>
+                                {% else %}
+                                    <option selected></option>
+                                {% endif %}
+                                
+                                {% for model in filterData.models %}
+                                    <option {% if model == filterData.model %}selected{% endif %}>{{ model }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-content-group">
+                        <div>
+                            <strong>Kraftstoff</strong>
+                        </div>
+                        <div>
+                            <select name="fuel" onchange="this.form.submit()">
+                                {% if filterData.fuel %}
+                                    <option></option>
+                                {% else %}
+                                    <option selected></option>
+                                {% endif %}
+                                
+                                {% for fuel in filterData.fuels %}
+                                    <option {% if fuel == filterData.fuel %}selected{% endif %}>{{ fuel }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-content-group">
+                        <div>
+                            <strong>PS</strong>
+                        </div>
+                        <div>
+                            <input name="hp_from" type="text" placeholder="von" value="{% if filterData.hp_from %}{{ filterData.hp_from }}{% endif %}" />
+                            <input name="hp_to" type="text" placeholder="bis" value="{% if filterData.hp_to %}{{ filterData.hp_to }}{% endif %}" />
+                        </div>
+                    </div>
+                    <div class="filter-content-group">
+                        <div>
+                            <strong>NM</strong>
+                        </div>
+                        <div>
+                            <input name="nm_from" type="text" placeholder="von" value="{% if filterData.nm_from %}{{ filterData.nm_from }}{% endif %}" />
+                            <input name="nm_to" type="text" placeholder="bis" value="{% if filterData.nm_to %}{{ filterData.nm_to }}{% endif %}" />
+                        </div>
+                    </div>
+                    {% block filter_content_additionals %}
+                    {% endblock %}
+                    <input type="submit" value="Filter" />
+                {% endblock %}
+            </div>
+
+            <div class="filter-result">
+                {% block filter_result %}
+                {% endblock %}            
+            </div>
+        </div>
+    </form>
+{% endblock %}

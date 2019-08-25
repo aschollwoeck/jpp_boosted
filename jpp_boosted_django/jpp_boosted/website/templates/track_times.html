@@ -1,0 +1,55 @@
+{% extends 'filter_base.html' %}
+{% load duration %}
+
+{% block filter_form_action %}/tracktimes/{% endblock %}
+
+{% block filter_header_sort_options %}
+    <option value="time_asc" {% if filterData.order == 'time_asc' %}selected{% endif %}>Rundenzeit aufsteigend</option>
+    <option value="time_desc" {% if filterData.order == 'time_desc' %}selected{% endif %}>Rundenzeit absteigend</optin>
+{% endblock %}
+
+{% block filter_content_additionals %}
+    <div class="filter-content-group">
+        <div>
+            <strong>Strecke</strong>
+        </div>
+        <div>
+            <select name="track" onchange="this.form.submit()">
+                {% if filterData.track %}
+                    <option></option>
+                {% else %}
+                    <option selected></option>
+                {% endif %}
+                
+                {% for track in filterData.tracks %}
+                    <option {% if track == filterData.track %}selected{% endif %}>{{ track }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+{% endblock %}
+
+{% block filter_result %}
+    {% if track_times_list  %}
+        <table class="filter-result-table">
+            <tr>
+                <th>#</th>
+                <th>Fahrzeug</th>
+                <th>Mod.</th>
+                <th>Strecke</th>
+                <th>Zeit</th>
+            </tr>
+        {% for track_time in track_times_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><a href="/projects/{{ track_time.state.project.id }}">{{ track_time.state.project.title }}</a></td>
+                <td><a href="/projects/{{ track_time.state.project.id }}">{{ track_time.state.title }}</a></td>
+                <td>{{ track_time.track }}</td>
+                <td>{{ track_time.duration | duration }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+        <p>No track times found.</p>
+    {% endif %}
+{% endblock %}

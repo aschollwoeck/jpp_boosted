@@ -1,0 +1,34 @@
+{% extends 'filter_base.html' %}
+{% load static %}
+
+{% block filter_form_action %}/dynos/{% endblock %}
+
+{% block filter_header_sort_options %}
+    <option value="hp_desc" {% if filterData.order == 'hp_desc' %}selected{% endif %}>PS absteigend</optin>
+    <option value="hp_asc" {% if filterData.order == 'hp_asc' %}selected{% endif %}>PS aufsteigend</option>
+    <option value="nm_desc" {% if filterData.order == 'nm_desc' %}selected{% endif %}>NM absteigend</optin>
+    <option value="nm_asc" {% if filterData.order == 'nm_asc' %}selected{% endif %}>NM aufsteigend</option>
+{% endblock %}
+
+{% block filter_result %}
+    {% if dyno_measurements_list  %}
+        <table class="filter-result-table">
+            <tr>
+                <th>Fahrzeug</th>
+                <th>Modifizierung</th>
+                <th>PS</th>
+                <th>NM</th>
+            </tr>
+        {% for dyno_meas in dyno_measurements_list %}
+            <tr>
+                <td><a href="/projects/{{ dyno_meas.state.project.id }}">{{ dyno_meas.state.project.title }}</a></td>
+                <td><a href="/projects/{{ dyno_meas.state.project.id }}">{{ dyno_meas.state.title }}</a></td>
+                <td>{{ dyno_meas.horse_power }}</td>
+                <td>{{ dyno_meas.newtonmeter }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+        <p>No dyno measurements found.</p>
+    {% endif %}
+{% endblock %}
