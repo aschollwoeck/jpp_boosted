@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models.models import YouTubeVideo, Brand, Project, State, Part, DynoMeasurementDevice, DynoMeasurement, TimePerformanceMeasurementDevice, TimePerformanceMeasurement, Track, TrackPart, TrackMeasurement, TrackPartMeasurement, Fuel
+from models.models import YouTubeVideo, Brand, Project, State, Part, DynoMeasurementDevice, DynoMeasurement, TimePerformanceMeasurementDevice, TimePerformanceMeasurement, Track, TrackPart, TrackMeasurement, TrackPartMeasurement, Fuel, BrandCategory
 
 # Register your models here.
 admin.site.register(YouTubeVideo)
@@ -16,3 +16,4 @@ admin.site.register(TrackPart)
 admin.site.register(TrackMeasurement)
 admin.site.register(TrackPartMeasurement)
 admin.site.register(Fuel)
+admin.site.register(BrandCategory)

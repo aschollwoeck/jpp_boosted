@@ -9,7 +9,7 @@ class IndexView(generic.ListView):
     context_object_name = 'project_list'
 
     def get_queryset(self):
-        return Project.objects.order_by('-state__modified_at')[:5]
+        return Project.objects.order_by('-last_modified')[:5]
 
 class FilterData():
     query = ""
@@ -38,7 +38,7 @@ class FilterData():
         self.order = request.GET.get("order")
 
         # Load the possible filter lists for each field
-        self.brands = Brand.objects.all().order_by("name").values_list("name", flat=True).distinct()
+        self.brands = Brand.objects.filter(category__name__iexact="CarManufacturer").order_by("name").values_list("name", flat=True).distinct()
         if(not self.brand in self.brands):
             self.brand = ""
 
@@ -102,10 +102,10 @@ class ProjectsView(generic.ListView):
 
         # Sort projects
         if(filterData.order is None or filterData.order == "" or filterData.order == "mod_desc"):
-            r = r.order_by('-state__modified_at')
+            r = r.order_by('-last_modified')
 
         if(filterData.order == "mod_asc"):
-            r = r.order_by('state__modified_at')
+            r = r.order_by('last_modified')
 
         context[self.context_object_name] = r
         return context

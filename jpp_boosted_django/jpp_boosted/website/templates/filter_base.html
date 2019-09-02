@@ -82,8 +82,9 @@
                         <div>
                             <strong>PS</strong>
                         </div>
-                        <div>
+                        <div class="filter-content-group-fromto">
                             <input name="hp_from" type="text" placeholder="von" value="{% if filterData.hp_from %}{{ filterData.hp_from }}{% endif %}" />
+                            -
                             <input name="hp_to" type="text" placeholder="bis" value="{% if filterData.hp_to %}{{ filterData.hp_to }}{% endif %}" />
                         </div>
                     </div>
@@ -91,14 +92,15 @@
                         <div>
                             <strong>NM</strong>
                         </div>
-                        <div>
+                        <div class="filter-content-group-fromto">
                             <input name="nm_from" type="text" placeholder="von" value="{% if filterData.nm_from %}{{ filterData.nm_from }}{% endif %}" />
+                            -
                             <input name="nm_to" type="text" placeholder="bis" value="{% if filterData.nm_to %}{{ filterData.nm_to }}{% endif %}" />
                         </div>
                     </div>
                     {% block filter_content_additionals %}
                     {% endblock %}
-                    <input type="submit" value="Filter" />
+                    <input type="submit" value="Filtern" />
                 {% endblock %}
             </div>
 

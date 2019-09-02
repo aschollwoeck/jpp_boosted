@@ -21,10 +21,20 @@ class YouTubeVideo(models.Model):
         
         return m.group(1)
 
+class BrandCategory(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+    
+
 class Brand(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     name = models.CharField(max_length=100)
+    category = models.ForeignKey(BrandCategory, on_delete=models.DO_NOTHING)
     url = models.URLField()
 
     def __str__(self):
@@ -49,6 +59,8 @@ class Project(models.Model):
     fuel = models.ForeignKey(Fuel, on_delete=models.DO_NOTHING)
     production_date = models.DateField()
     purchase_date = models.DateField()
+    last_modified = models.DateField()
+    image = models.ImageField(max_length=200, upload_to="static/")
 
     def __str__(self):
         return self.title
@@ -74,10 +86,18 @@ class State(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
     modified_at = models.DateField()
+    image = models.ImageField(max_length=200, upload_to="static/")
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     youtubevideo = models.ManyToManyField(YouTubeVideo)
     parts = models.ManyToManyField(Part, blank=True)
+
+    def save(self, *args, **kwargs):
+        if(self.project.last_modified < self.modified_at):
+            self.project.last_modified = self.modified_at
+            self.project.save()
+        
+        super(State, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.project.title + " - " + self.title

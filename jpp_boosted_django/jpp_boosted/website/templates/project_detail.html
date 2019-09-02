@@ -4,17 +4,6 @@
 
 {% block styles %}
     <style type="text/css">
-        .project-detail-key-value {
-            display: grid;
-            grid-template-columns: [col] 125px [col] auto;
-        }
-        .project-detail-key-value:nth-child(1) {
-            grid-column: col 1;
-        }
-        .project-detail-key-value:nth-child(2) {
-            grid-column: col 2;
-        }
-
         .project-detail-basics {
             margin-right: 25px;
         }
@@ -99,13 +88,15 @@
             </a>
         </div>
         <div class="project-detail-basics-data">
-            <div class="project-detail-key-value">
-                <div>Hersteller</div>
+            <div class="key-value-list">
+                <div>Marke:</div>
                 <div><a href="{{ project.brand.url }}" target="_blank">{{ project.brand.name }}</a></div>
-                <div>Modell</div>
+                <div>Modell:</div>
                 <div>{{ project.model }} ({{ project.code }})</div>
-                <div>Baujahr</div>
+                <div>Baujahr:</div>
                 <div>{{ project.production_date }}</div>
+                <div>Mod. Zeit:</div>
+                <div>{{ project.purchase_date | date:"M. Y" }} - {{ project.last_modified | date:"M. Y" }}</div>
             </div>
         </div>
     </div>
@@ -125,8 +116,8 @@
                     </div>
                 {% endif %}    
                 <div class="project-detail-section">
-                        <div class="project-detail-key-value">
-                            <div>Modifizierung</div>
+                        <div class="key-value-list">
+                            <div>Mod. vom:</div>
                             <div>{{ state.modified_at }}</div>
                         </div>
                     </div>
@@ -135,10 +126,10 @@
                     <div class="project-detail-section">
                         <strong>Leistung</strong>
                         {% for dyno in state.dynomeasurement_set.all %}
-                            <div class="project-detail-key-value">
-                                <div>PS</div>
+                            <div class="key-value-list">
+                                <div>PS:</div>
                                 <div>{{ dyno.horse_power }}</div>
-                                <div>NM</div>
+                                <div>NM:</div>
                                 <div>{{ dyno.newtonmeter }}</div>
                             </div>
                         {% endfor %}
@@ -148,9 +139,9 @@
                 {% if state.timeperformancemeasurement_set.all %}
                     <div class="project-detail-section">
                         <strong>Gemessene Zeiten (km/h)</strong>
-                        <div class="project-detail-key-value">
+                        <div class="key-value-list">
                             {% for time in state.timeperformancemeasurement_set.all %}
-                                <div>{{ time.speed_start }}-{{ time.speed_end }}</div>
+                                <div>{{ time.speed_start }}-{{ time.speed_end }}:</div>
                                 <div>{{ time.duration | duration }}</div>
                             {% endfor %}
                         </div>
