@@ -9,7 +9,12 @@ pip install django
 pip install djangorestframework
 ```
 
-Afterwards activate the environment so you can run e.g. python manage.py runserver command
+Afterwards activate the environment
 ```
 source env/bin/activate
+```
+
+so you can run e.g. 
+```
+python manage.py runserver command
 ```
