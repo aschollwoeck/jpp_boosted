@@ -14,7 +14,7 @@ Afterwards activate the environment
 source env/bin/activate
 ```
 
-so you can run e.g. 
+so you can run a command e.g. 
 ```
-python manage.py runserver command
+python manage.py runserver 
 ```
